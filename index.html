@@ -333,6 +333,52 @@
     /* Adjust header margin when collapsed */
     .exercise-card.completed .card-header { margin-bottom: 0; }
 
+    /* --- COLLAPSIBLE DRAWER STYLES --- */
+    .exercise-card {
+        transition: all 0.3s ease;
+        overflow: hidden; /* Essential for collapse */
+        padding: 0; /* padding moved to inner elements */
+    }
+    
+    .card-header {
+        padding: 20px;
+        margin-bottom: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--card-bg);
+    }
+
+    /* The Chevron Icon that rotates */
+    .chevron {
+        transition: transform 0.3s;
+        width: 24px; height: 24px;
+        fill: var(--text-sec);
+        margin-left: 10px;
+    }
+    .expanded .chevron { transform: rotate(180deg); }
+
+    /* The container for everything else (Sets, Weights, Buttons) */
+    .exercise-details {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, opacity 0.3s ease;
+        background: #182233; /* Slightly darker inner bg */
+    }
+    
+    .expanded .exercise-details {
+        max-height: 1000px; /* Allow expansion */
+        opacity: 1;
+        padding: 20px; /* Changed from "0 20px 20px 20px" to add space at top */
+        border-top: 1px solid #334155;
+    }
+
+    /* Completed State Overrides */
+    .exercise-card.completed { opacity: 0.5; }
+    .exercise-card.completed .exercise-name { text-decoration: line-through; color: var(--text-sec); }
+
     </style>
 
 </head>
@@ -515,12 +561,11 @@
     let splits = JSON.parse(localStorage.getItem('trainingSplits')) || [];
     let workoutLogs = JSON.parse(localStorage.getItem('workoutLogs')) || [];
     let currentSplitId = null;
-    let timerInterval = null;
-    let timerSeconds = 0;
-    let sessionStartTime = null;
+    
+    // Timer Variables
+    let restTimerInterval = null;
     let sessionInterval = null;
     let isTraining = false;
-    let confirmCallback = null;
 
     // --- HELPER FUNCTIONS ---
     function showConfirm(title, message, onConfirm) {
@@ -576,32 +621,28 @@
 
     // --- INITIALIZATION ---
     document.addEventListener('DOMContentLoaded', () => {
-        const confirmBtn = document.getElementById('confirm-yes-btn');
-        if(confirmBtn) {
-            confirmBtn.addEventListener('click', () => {
-                if (confirmCallback) confirmCallback();
-                closeConfirmModal();
-            });
+        // 1. Restore Session Timer
+        const storedSessionStart = localStorage.getItem('sessionStartTime');
+        if (storedSessionStart) {
+            isTraining = true;
+            resumeSessionUI(parseInt(storedSessionStart));
         }
 
-        const now = new Date();
-        const dateEl = document.getElementById('date-display');
-        if(dateEl) dateEl.innerText = now.toLocaleDateString();
+        // 2. Restore Rest Timer
+        const storedRestTarget = localStorage.getItem('restTargetTime');
+        if (storedRestTarget) {
+            const remaining = Math.ceil((parseInt(storedRestTarget) - Date.now()) / 1000);
+            if (remaining > 0) {
+                startTimer(remaining, true); // true = resuming
+            } else {
+                localStorage.removeItem('restTargetTime'); // Timer finished while away
+            }
+        }
 
+        // 3. Render
         renderSplits();
-        
-        // Legacy Migration
-        const oldData = localStorage.getItem('trainingData');
-        if(oldData && splits.length === 0) {
-            try {
-                const oldEx = JSON.parse(oldData);
-                if(Array.isArray(oldEx) && oldEx.length > 0) {
-                    splits.push({ id: Date.now(), name: "Imported Workout", exercises: oldEx });
-                    localStorage.setItem('trainingSplits', JSON.stringify(splits));
-                    renderSplits();
-                }
-            } catch(e) { console.error("Migration failed", e); }
-        }
+        const dateEl = document.getElementById('date-display');
+        if(dateEl) dateEl.innerText = new Date().toLocaleDateString();
     });
 
     // --- NAVIGATION ---
@@ -692,8 +733,11 @@
             const isAlt = ex.showAlt && ex.hasAlt;
             const data = isAlt ? ex.alt : ex;
             const scope = isAlt ? 'alt' : 'main';
-            const isDone = ex.completed || false; // Check state
+            const isDone = ex.completed || false;
+            // Default to collapsed unless explicitly expanded (optional state tracking)
+            const isExpanded = ex.isExpanded || false; 
 
+            // Weight Inputs HTML Generation
             let weightInputsHtml = '<div class="weight-row">';
             if (data.weightMode === 'individual' && Array.isArray(data.weights)) {
                 data.weights.forEach((w, i) => {
@@ -713,47 +757,62 @@
             weightInputsHtml += '</div>';
 
             const card = document.createElement('div');
-            // Add 'completed' class if isDone is true
-            card.className = `exercise-card ${isDone ? 'completed' : ''}`;
+            card.className = `exercise-card ${isExpanded ? 'expanded' : ''} ${isDone ? 'completed' : ''}`;
+            
+            // Note: Card Header handles the click to toggle
             card.innerHTML = `
-                <div class="card-header">
-                    <div style="display:flex; align-items:center;">
-                        <div class="check-btn ${isDone ? 'checked' : ''}" onclick="toggleComplete(${ex.id})">
+                <div class="card-header" onclick="toggleExpand(${ex.id})">
+                    <div style="display:flex; align-items:center; flex-grow:1;">
+                        <div class="check-btn ${isDone ? 'checked' : ''}" onclick="event.stopPropagation(); toggleComplete(${ex.id})">
                             ${isDone ? '&#10003;' : ''}
                         </div>
                         
-                        <div class="exercise-name" onclick="openVersionDrawer(${ex.id})">
+                        <div class="exercise-name">
                             ${data.name} 
                             ${isAlt ? '<span class="alt-badge">ALT</span>' : ''}
-                            ${ex.hasAlt ? '<span style="font-size:0.8rem; color:var(--text-sec); margin-left:6px; transform:translateY(1px);">▼</span>' : ''}
                         </div>
                     </div>
-
-                    <button class="timer-btn" onclick="initTimer('${ex.rest || '60'}')">
-                        <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
-                        ${ex.rest || 'Timer'}
-                    </button>
-                </div>
-                
-                <div class="stats-row">
-                    <div class="stat-badge"><small>SETS</small><strong>${data.sets}</strong></div>
-                    <div class="stat-badge"><small>REPS</small><strong>${data.reps}</strong></div>
+                    
+                    <div style="display:flex; align-items:center;">
+                        <button class="timer-btn" onclick="event.stopPropagation(); initTimer('${ex.rest || '60'}')">
+                            <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+                            ${ex.rest || 'Timer'}
+                        </button>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                    </div>
                 </div>
 
-                <div class="weight-display">
-                    ${weightInputsHtml}
-                </div>
-                
-                ${ex.notes ? `<div class="notes-display" style="margin-bottom:16px; font-size: 0.9rem; color: var(--text-sec); background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">${ex.notes}</div>` : ''}
+                <div class="exercise-details">
+                    <div class="stats-row">
+                        <div class="stat-badge"><small>SETS</small><strong>${data.sets}</strong></div>
+                        <div class="stat-badge"><small>REPS</small><strong>${data.reps}</strong></div>
+                    </div>
 
-                <div class="card-actions">
-                    <button class="btn-card" onclick="editExercise(${ex.id})">Edit</button>
-                    <button class="btn-card" onclick="viewHistory(${ex.id})">History</button>
-                    ${ex.hasAlt ? `<button class="btn-card highlight" onclick="openVersionDrawer(${ex.id})">Swap</button>` : ''}
+                    <div class="weight-display">
+                        ${weightInputsHtml}
+                    </div>
+                    
+                    ${ex.notes ? `<div style="margin-bottom:16px; font-size: 0.9rem; color: var(--text-sec); background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">${ex.notes}</div>` : ''}
+
+                    <div class="card-actions">
+                        <button class="btn-card" onclick="editExercise(${ex.id})">Edit</button>
+                        <button class="btn-card" onclick="viewHistory(${ex.id})">History</button>
+                        ${ex.hasAlt ? `<button class="btn-card highlight" onclick="openVersionDrawer(${ex.id})">Swap</button>` : ''}
+                    </div>
                 </div>
             `;
             list.appendChild(card);
         });
+    }
+
+    // --- NEW: Toggle Logic ---
+    function toggleExpand(exId) {
+        const split = splits.find(s => s.id === currentSplitId);
+        const ex = split.exercises.find(e => e.id === exId);
+        ex.isExpanded = !ex.isExpanded; // Toggle state
+        // We don't necessarily need to save to localStorage for just UI toggles, 
+        // but re-rendering is needed to apply class.
+        renderExercises(); 
     }
 
     function quickUpdateWeight(exId, scope, index, value) {
@@ -858,23 +917,39 @@
         startTimer(duration);
     }
 
-    function startTimer(seconds) {
-        clearInterval(timerInterval);
-        timerSeconds = seconds;
-        updateTimerDisplay();
+    // --- REST TIMER (Universal) ---
+    function startTimer(seconds, resuming = false) {
+        clearInterval(restTimerInterval);
+        
+        // Calculate Target Time (Universal)
+        const targetTime = resuming 
+            ? parseInt(localStorage.getItem('restTargetTime')) 
+            : Date.now() + (seconds * 1000);
+
+        if(!resuming) localStorage.setItem('restTargetTime', targetTime);
+
         document.getElementById('timer-overlay').classList.add('visible');
         document.body.classList.add('timer-active');
 
-        timerInterval = setInterval(() => {
-            timerSeconds--;
-            if (timerSeconds <= 0) {
+        const tick = () => {
+            const now = Date.now();
+            const remaining = Math.ceil((targetTime - now) / 1000);
+            
+            if (remaining <= 0) {
                 stopTimer();
                 if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
                 showToast("⏰ REST FINISHED!");
             } else {
-                updateTimerDisplay();
+                // Display Logic
+                const m = Math.floor(remaining / 60);
+                const s = remaining % 60;
+                document.getElementById('timer-count').innerText = 
+                    `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             }
-        }, 1000);
+        };
+
+        tick(); // Run immediately
+        restTimerInterval = setInterval(tick, 1000);
     }
 
     function adjustTimer(amt) {
@@ -884,7 +959,8 @@
     }
 
     function stopTimer() {
-        clearInterval(timerInterval);
+        clearInterval(restTimerInterval);
+        localStorage.removeItem('restTargetTime');
         document.getElementById('timer-overlay').classList.remove('visible');
         document.body.classList.remove('timer-active');
     }
@@ -925,25 +1001,37 @@
         const splitIndex = splits.findIndex(s => s.id === currentSplitId);
         if(id) oldEx = splits[splitIndex].exercises.find(e => e.id == id);
 
+        // --- FIXED HISTORY LOGIC ---
         let mainHistory = (oldEx && oldEx.history) ? oldEx.history : [];
-        const mainWeightStr = Array.isArray(newMainWeights) ? newMainWeights.join(', ') : newMainWeights;
-        const oldMainWeightStr = oldEx ? (Array.isArray(oldEx.weights) ? oldEx.weights.join(', ') : oldEx.weights) : '';
+        
+        // Convert to strings for accurate comparison
+        const newStr = JSON.stringify(newMainWeights);
+        const oldStr = oldEx ? JSON.stringify(oldEx.weights) : "";
 
-        if(mainWeightStr && mainWeightStr !== oldMainWeightStr) {
-            mainHistory.unshift({ date: today, weight: mainWeightStr });
+        // Only log if weights exist AND they are different from before
+        if(newMainWeights && newStr !== oldStr && newStr !== '""' && newStr !== '[]') {
+            // Unshift adds to the TOP of the list
+            mainHistory.unshift({ 
+                date: today, 
+                weight: Array.isArray(newMainWeights) ? newMainWeights.join(' / ') : newMainWeights 
+            });
         }
 
+        // ... (Same logic for Alt Exercise History) ...
         let altData = null;
         if(hasAlt) {
             const aMode = document.querySelector('input[name="altWeightMode"]:checked').value;
             const newAltWeights = getWeights('weight-container-alt', aMode);
-            const altWeightStr = Array.isArray(newAltWeights) ? newAltWeights.join(', ') : newAltWeights;
             
             let altHistory = (oldEx && oldEx.alt && oldEx.alt.history) ? oldEx.alt.history : [];
-            const oldAltWeightStr = (oldEx && oldEx.alt) ? (Array.isArray(oldEx.alt.weights) ? oldEx.alt.weights.join(', ') : oldEx.alt.weights) : '';
+            const newAltStr = JSON.stringify(newAltWeights);
+            const oldAltStr = (oldEx && oldEx.alt) ? JSON.stringify(oldEx.alt.weights) : "";
 
-            if(altWeightStr && altWeightStr !== oldAltWeightStr) {
-                altHistory.unshift({ date: today, weight: altWeightStr });
+            if(newAltWeights && newAltStr !== oldAltStr && newAltStr !== '""') {
+                altHistory.unshift({ 
+                    date: today, 
+                    weight: Array.isArray(newAltWeights) ? newAltWeights.join(' / ') : newAltWeights 
+                });
             }
 
             altData = {
@@ -968,7 +1056,9 @@
             history: mainHistory,
             hasAlt: hasAlt,
             alt: altData,
-            showAlt: (oldEx ? oldEx.showAlt : false)
+            showAlt: (oldEx ? oldEx.showAlt : false),
+            completed: (oldEx ? oldEx.completed : false), // Preserve checked state
+            isExpanded: (oldEx ? oldEx.isExpanded : false) // Preserve expansion state
         };
 
         if (id) {
@@ -1145,68 +1235,70 @@
         if(ex.completed && navigator.vibrate) navigator.vibrate(20);
     }
 
-    // --- UPDATED: SESSION ROTATION (Resets checks) ---
+    // --- SESSION TIMER (Universal) ---
     function toggleSession() {
         const btn = document.getElementById('btn-session');
         
         if (!isTraining) {
             // START
             isTraining = true;
-            sessionStartTime = Date.now();
-            btn.className = 'btn-finish';
-            btn.innerHTML = "FINISH (00:00)";
-            
-            sessionInterval = setInterval(() => {
-                const diff = Math.floor((Date.now() - sessionStartTime) / 1000);
-                const m = Math.floor(diff / 60).toString().padStart(2, '0');
-                const s = (diff % 60).toString().padStart(2, '0');
-                btn.innerHTML = `FINISH (${m}:${s})`;
-            }, 1000);
-            
+            const startTime = Date.now();
+            localStorage.setItem('sessionStartTime', startTime);
+            resumeSessionUI(startTime);
         } else {
-            // FINISH
-            const durationSec = Math.floor((Date.now() - sessionStartTime) / 1000);
-            const m = Math.floor(durationSec / 60);
-            const s = durationSec % 60;
-            const timeStr = `${m}m ${s}s`;
-
-            showConfirm(
-                "Finish Workout?",
-                `Duration: ${timeStr}. Save & Rotate?`,
-                () => {
-                    clearInterval(sessionInterval);
-                    const splitIndex = splits.findIndex(s => s.id === currentSplitId);
-                    const split = splits[splitIndex];
-                    
-                    // 1. Save Log
-                    workoutLogs.push({
-                        date: new Date().toLocaleDateString(),
-                        splitName: split.name,
-                        duration: timeStr
-                    });
-                    localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
-
-                    // 2. RESET CHECKBOXES (Clean slate for next time)
-                    split.exercises.forEach(ex => ex.completed = false);
-
-                    // 3. ROTATE PROGRAM
-                    if (splitIndex > -1) {
-                        splits.splice(splitIndex, 1);
-                        splits.push(split);
-                        saveData();
-                        renderSplits();
-                    }
-
-                    showToast("Cycle Rotated & Reset!");
-                    
-                    isTraining = false;
-                    sessionStartTime = null;
-                    btn.className = 'btn-start';
-                    btn.innerHTML = "START TRAINING";
-                    openDataModal();
-                }
-            );
+            // STOP
+            finishSession();
         }
+    }
+
+    function resumeSessionUI(startTime) {
+        const btn = document.getElementById('btn-session');
+        btn.className = 'btn-finish';
+        
+        const tick = () => {
+            const diff = Math.floor((Date.now() - startTime) / 1000);
+            const m = Math.floor(diff / 60).toString().padStart(2, '0');
+            const s = (diff % 60).toString().padStart(2, '0');
+            btn.innerHTML = `FINISH (${m}:${s})`;
+        };
+
+        tick();
+        sessionInterval = setInterval(tick, 1000);
+    }
+
+    function finishSession() {
+        const startTime = parseInt(localStorage.getItem('sessionStartTime'));
+        const durationSec = Math.floor((Date.now() - startTime) / 1000);
+        const m = Math.floor(durationSec / 60);
+        const s = durationSec % 60;
+        const timeStr = `${m}m ${s}s`;
+
+        showConfirm("Finish Workout?", `Duration: ${timeStr}. Save & Rotate?`, () => {
+            clearInterval(sessionInterval);
+            localStorage.removeItem('sessionStartTime'); // Clear Saved Time
+            
+            const splitIndex = splits.findIndex(s => s.id === currentSplitId);
+            const split = splits[splitIndex];
+
+            // Save Log
+            workoutLogs.push({ date: new Date().toLocaleDateString(), splitName: split.name, duration: timeStr });
+            localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
+
+            // Reset & Rotate
+            split.exercises.forEach(ex => { ex.completed = false; ex.isExpanded = false; });
+            if (splitIndex > -1) {
+                splits.splice(splitIndex, 1);
+                splits.push(split);
+                saveData();
+                renderSplits();
+            }
+
+            showToast("Workout Saved!");
+            isTraining = false;
+            document.getElementById('btn-session').className = 'btn-start';
+            document.getElementById('btn-session').innerHTML = "START TRAINING";
+            openDataModal();
+        });
     }
 
     function resetExForm() {
