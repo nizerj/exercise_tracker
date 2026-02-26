@@ -119,6 +119,38 @@
             }
         }
 
+        /* --- NEW COLLAPSE & ALT STYLES --- */
+        .exercise-body {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .exercise-card.collapsed .exercise-body {
+            display: none !important;
+        }
+
+        .exercise-card {
+            transition: all 0.2s ease;
+        }
+
+        .chevron {
+            transition: transform 0.3s ease;
+            display: inline-block;
+            color: var(--text-sec);
+            font-size: 0.8rem;
+        }
+
+        .exercise-card.collapsed .chevron {
+            transform: rotate(-90deg);
+        }
+
+        .alt-block {
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
         /* --- SPLIT CARDS (Programs) --- */
         .split-card {
             background: var(--card-bg);
@@ -180,6 +212,100 @@
             width: 20px;
             height: 20px;
             fill: currentColor;
+        }
+
+        /* --- NEW PREMIUM UI ADDITIONS --- */
+        .swap-icon {
+            width: 14px;
+            height: 14px;
+            fill: var(--primary);
+            margin-left: 8px;
+            cursor: pointer;
+            padding: 4px;
+            background: var(--primary-dim);
+            border-radius: 50%;
+            vertical-align: middle;
+            transition: transform 0.2s;
+        }
+
+        .swap-icon:active {
+            transform: rotate(180deg);
+        }
+
+        /* Floating Pill Timer */
+        #timer-overlay {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(200%);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--primary);
+            padding: 10px 20px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(45, 212, 191, 0.25);
+            z-index: 100;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            width: max-content;
+        }
+
+        #timer-overlay.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #timer-overlay .timer-display {
+            font-size: 1.5rem;
+            color: white;
+            margin: 0;
+        }
+
+        /* Volume Graphing */
+        .volume-container {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #334155;
+            margin-bottom: 20px;
+        }
+
+        .volume-graph {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 120px;
+            border-bottom: 1px solid #475569;
+            padding-bottom: 5px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .volume-graph::-webkit-scrollbar {
+            display: none;
+        }
+
+        .graph-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 0 0 30px;
+        }
+
+        .graph-bar {
+            background: var(--primary);
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            min-height: 2px;
+        }
+
+        .graph-label {
+            font-size: 0.6rem;
+            color: var(--text-sec);
+            margin-top: 4px;
         }
 
         /* --- EXERCISE CARDS --- */
@@ -786,15 +912,12 @@
     <button class="fab" onclick="handleFabClick()">+</button>
 
     <div id="timer-overlay">
-        <div class="timer-text">
-            <span
-                style="font-size:0.75rem; color:var(--text-sec); letter-spacing:1px; text-transform:uppercase;">Resting</span>
-            <div id="timer-count" class="timer-display">00:00</div>
-        </div>
-        <div class="timer-controls">
-            <button class="btn-timer-ctrl" onclick="adjustTimer(-10)">-10</button>
-            <button class="btn-timer-ctrl" onclick="adjustTimer(30)">+30</button>
-            <button class="btn-timer-ctrl stop" onclick="stopTimer()">&times;</button>
+        <div id="timer-count" class="timer-display">00:00</div>
+        <div class="timer-controls" style="gap: 8px;">
+            <button class="btn-timer-ctrl" onclick="adjustTimer(-10)" style="width: 36px; height: 36px;">-10</button>
+            <button class="btn-timer-ctrl" onclick="adjustTimer(30)" style="width: 36px; height: 36px;">+30</button>
+            <button class="btn-timer-ctrl stop" onclick="stopTimer()"
+                style="width: 36px; height: 36px;">&times;</button>
         </div>
     </div>
 
@@ -825,7 +948,7 @@
                     <input type="text" id="ex-name" required placeholder="e.g. Bench Press">
                 </div>
 
-                <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
                     <div class="form-group">
                         <label>Sets</label>
                         <input type="number" id="ex-sets" required placeholder="3" oninput="updateWeightInputs('main')">
@@ -833,6 +956,10 @@
                     <div class="form-group">
                         <label>Reps</label>
                         <input type="text" id="ex-reps" placeholder="8-12">
+                    </div>
+                    <div class="form-group">
+                        <label>RPE</label>
+                        <input type="number" id="ex-rpe" placeholder="7-10" min="1" max="10">
                     </div>
                 </div>
 
@@ -861,35 +988,15 @@
                     <textarea id="ex-notes" placeholder="Form cues, feelings, etc."></textarea>
                 </div>
 
-                <div class="toggle-section">
-                    <div class="toggle-header" onclick="toggleAltForm()">
-                        <label style="margin:0; pointer-events:none;">Add Alternative Exercise?</label>
-                        <input type="checkbox" id="has-alt" style="width:auto;">
-                    </div>
-                    <div id="alt-form-container" class="hidden"
-                        style="margin-top: 15px; border-top: 1px solid #334155; padding-top: 15px;">
-                        <h3 style="font-size: 1rem; color: var(--primary);">Alternative Details</h3>
-                        <div class="form-group"><label>Alt Name</label><input type="text" id="alt-name"
-                                placeholder="Name"></div>
-                        <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                            <div class="form-group"><label>Alt Sets</label><input type="number" id="alt-sets"
-                                    placeholder="3" oninput="updateWeightInputs('alt')"></div>
-                            <div class="form-group"><label>Alt Reps</label><input type="text" id="alt-reps"
-                                    placeholder="10"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Alt Weight Mode</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="altWeightMode" value="single" checked
-                                        onchange="updateWeightInputs('alt')"> Single</label>
-                                <label><input type="radio" name="altWeightMode" value="individual"
-                                        onchange="updateWeightInputs('alt')"> Per Set</label>
-                            </div>
-                        </div>
-                        <div class="form-group"><label>Alt Weight</label>
-                            <div id="weight-container-alt" class="dynamic-weights"></div>
-                        </div>
-                    </div>
+                <div class="toggle-section" style="background: transparent; border: none; padding: 0;">
+                    <div id="alts-dynamic-container"
+                        style="display:flex; flex-direction:column; gap:15px; margin-bottom: 15px;"></div>
+
+                    <button type="button" class="btn-block"
+                        style="background: rgba(45, 212, 191, 0.1); color: var(--primary); border: 1px dashed var(--primary); margin-top: 0;"
+                        onclick="addAltForm()">
+                        + Add Alternative Exercise
+                    </button>
                 </div>
 
                 <button type="submit" class="btn-block btn-primary">Save Exercise</button>
@@ -1146,84 +1253,115 @@
                 return;
             }
 
+            const swapSvg = `<svg class="swap-icon" viewBox="0 0 24 24" onclick="event.stopPropagation(); openVersionDrawer(this.dataset.id)"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>`;
+
             split.exercises.forEach(ex => {
-                const isAlt = ex.showAlt && ex.hasAlt;
-                const data = isAlt ? ex.alt : ex;
-                const scope = isAlt ? 'alt' : 'main';
-                const isDone = ex.completed || false; // Check state
+                let alts = ex.alts || [];
+                if (ex.hasAlt && alts.length === 0) alts.push(ex.alt);
+
+                const selectedIdx = ex.selectedAltIndex || 0;
+                const isAlt = selectedIdx > 0;
+                const data = isAlt ? alts[selectedIdx - 1] : ex;
+                const scope = isAlt ? `alt-${selectedIdx - 1}` : 'main';
+                const isDone = ex.completed || false;
+                const isCollapsed = ex.isExpanded !== true;
 
                 let weightInputsHtml = '<div class="weight-row">';
                 if (data.weightMode === 'individual' && Array.isArray(data.weights)) {
                     data.weights.forEach((w, i) => {
                         weightInputsHtml += `
-                        <div class="direct-input-group">
-                            <span class="direct-label">SET ${i + 1}</span>
-                            <input type="number" class="direct-input" value="${w}" onchange="quickUpdateWeight(${ex.id}, '${scope}', ${i}, this.value)">
-                        </div>`;
+                    <div class="direct-input-group">
+                        <span class="direct-label">SET ${i + 1}</span>
+                        <input type="number" class="direct-input" value="${w}" onclick="event.stopPropagation()" onchange="quickUpdateWeight(${ex.id}, '${scope}', ${i}, this.value)">
+                    </div>`;
                     });
                 } else {
                     weightInputsHtml += `
-                    <div class="direct-input-group">
-                        <span class="direct-label">LOAD</span>
-                        <input type="number" class="direct-input" value="${data.weights}" onchange="quickUpdateWeight(${ex.id}, '${scope}', null, this.value)">
-                    </div>`;
+                <div class="direct-input-group">
+                    <span class="direct-label">LOAD</span>
+                    <input type="number" class="direct-input" value="${data.weights}" onclick="event.stopPropagation()" onchange="quickUpdateWeight(${ex.id}, '${scope}', null, this.value)">
+                </div>`;
                 }
                 weightInputsHtml += '</div>';
 
                 const card = document.createElement('div');
                 card.id = `exercise-card-${ex.id}`;
-                card.className = `exercise-card ${isDone ? 'completed' : ''}`;
+                card.className = `exercise-card ${isDone ? 'completed' : ''} ${isCollapsed ? 'collapsed' : ''}`;
+
                 card.innerHTML = `
-                <div class="card-header">
-                    <div style="display:flex; align-items:center;">
-                        <div class="check-btn ${isDone ? 'checked' : ''}" onclick="toggleComplete(${ex.id})">
-                            ${isDone ? '&#10003;' : ''}
+                    <div class="card-header" style="cursor:pointer; margin-bottom: ${isCollapsed ? '0' : '16px'};" onclick="toggleCollapse(${ex.id})">
+                        <div style="display:flex; align-items:center;">
+                            <div class="check-btn ${isDone ? 'checked' : ''}" onclick="event.stopPropagation(); toggleComplete(${ex.id})">
+                                ${isDone ? '&#10003;' : ''}
+                            </div>
+                            <div class="exercise-name">
+                                ${data.name} 
+                                ${isAlt ? '<span class="alt-badge">ALT</span>' : ''}
+                                ${alts.length > 0 ? swapSvg.replace('this.dataset.id', ex.id) : ''}
+                            </div>
+                        </div>
+                        <div class="chevron">▼</div>
+                    </div>
+                    
+                    <div class="exercise-body">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                            <div class="stats-row" style="margin-bottom:0; flex-grow:1; margin-right:10px;">
+                                <div class="stat-badge"><small>SETS</small><strong>${data.sets}</strong></div>
+                                <div class="stat-badge"><small>REPS</small><strong>${data.reps}</strong></div>
+                                <div class="stat-badge"><small>RPE</small><strong>${data.rpe || '-'}</strong></div>
+                            </div>
+                            <button class="timer-btn" onclick="initTimer('${ex.rest || '60'}')">
+                                ⏱ ${ex.rest || 'Timer'}
+                            </button>
+                        </div>
+
+                        <div class="weight-display">
+                            ${weightInputsHtml}
                         </div>
                         
-                        <div class="exercise-name" onclick="openVersionDrawer(${ex.id})">
-                            ${data.name} 
-                            ${isAlt ? '<span class="alt-badge">ALT</span>' : ''}
-                            ${ex.hasAlt ? '<span style="font-size:0.8rem; color:var(--text-sec); margin-left:6px; transform:translateY(1px);">▼</span>' : ''}
+                        ${data.notes ? `<div class="notes-display" style="margin-bottom:16px; font-size: 0.9rem; color: var(--text-sec); background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">${data.notes}</div>` : ''}
+
+                        <div class="card-actions">
+                            <button class="btn-card" onclick="editExercise(${ex.id})">Edit</button>
+                            <button class="btn-card" onclick="viewHistory(${ex.id})">History</button>
+                            ${alts.length > 0 ? `<button class="btn-card highlight" onclick="openVersionDrawer(${ex.id})">Swap</button>` : ''}
                         </div>
                     </div>
-
-                    <button class="timer-btn" onclick="initTimer('${ex.rest || '60'}')">
-                        <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
-                        ${ex.rest || 'Timer'}
-                    </button>
-                </div>
-                
-                <div class="stats-row">
-                    <div class="stat-badge"><small>SETS</small><strong>${data.sets}</strong></div>
-                    <div class="stat-badge"><small>REPS</small><strong>${data.reps}</strong></div>
-                </div>
-
-                <div class="weight-display">
-                    ${weightInputsHtml}
-                </div>
-                
-                ${ex.notes ? `<div class="notes-display" style="margin-bottom:16px; font-size: 0.9rem; color: var(--text-sec); background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">${ex.notes}</div>` : ''}
-
-                <div class="card-actions">
-                    <button class="btn-card" onclick="editExercise(${ex.id})">Edit</button>
-                    <button class="btn-card" onclick="viewHistory(${ex.id})">History</button>
-                    ${ex.hasAlt ? `<button class="btn-card highlight" onclick="openVersionDrawer(${ex.id})">Swap</button>` : ''}
-                </div>
-            `;
+                `;
                 list.appendChild(card);
             });
+        }
+
+
+        function toggleCollapse(exId) {
+            const split = splits.find(s => s.id === currentSplitId);
+            const ex = split.exercises.find(e => e.id === exId);
+            ex.isExpanded = !ex.isExpanded; // Toggle state
+
+            const cardNode = document.getElementById(`exercise-card-${exId}`);
+            if (cardNode) {
+                const header = cardNode.querySelector('.card-header');
+                if (ex.isExpanded) {
+                    cardNode.classList.remove('collapsed');
+                    header.style.marginBottom = '16px';
+                } else {
+                    cardNode.classList.add('collapsed');
+                    header.style.marginBottom = '0';
+                }
+            }
+            saveData();
         }
 
         function quickUpdateWeight(exId, scope, index, value) {
             const split = splits.find(s => s.id === currentSplitId);
             const ex = split.exercises.find(e => e.id === exId);
-            const target = scope === 'main' ? ex : ex.alt;
 
-            if (index === null) {
-                target.weights = value;
-            } else {
-                target.weights[index] = value;
-            }
+            const selectedIdx = ex.selectedAltIndex || 0;
+            let alts = ex.alts || (ex.hasAlt ? [ex.alt] : []);
+            const target = selectedIdx > 0 ? alts[selectedIdx - 1] : ex;
+
+            if (index === null) target.weights = value;
+            else target.weights[index] = value;
             saveData();
         }
 
@@ -1231,34 +1369,126 @@
             const split = splits.find(s => s.id === currentSplitId);
             const ex = split.exercises.find(e => e.id === exId);
 
-            if (!ex.hasAlt) return;
+            let alts = ex.alts || [];
+            if (ex.hasAlt && alts.length === 0) alts.push(ex.alt); // migrate
+
+            if (alts.length === 0) return;
 
             const drawer = document.getElementById('drawer-version');
             const list = document.getElementById('drawer-list');
             list.innerHTML = '';
 
+            const selectedIdx = ex.selectedAltIndex || 0;
+
             const mainDiv = document.createElement('div');
-            mainDiv.className = `drawer-item ${!ex.showAlt ? 'active' : ''}`;
-            mainDiv.onclick = () => selectVersion(exId, false);
-            mainDiv.innerHTML = `<div><h4>${ex.name}</h4><span>Main Exercise</span></div>${!ex.showAlt ? '<span style="color:var(--primary);">✔</span>' : ''}`;
-
-            const altDiv = document.createElement('div');
-            altDiv.className = `drawer-item ${ex.showAlt ? 'active' : ''}`;
-            altDiv.onclick = () => selectVersion(exId, true);
-            altDiv.innerHTML = `<div><h4>${ex.alt.name}</h4><span>Alternative</span></div>${ex.showAlt ? '<span style="color:var(--primary);">✔</span>' : ''}`;
-
+            mainDiv.className = `drawer-item ${selectedIdx === 0 ? 'active' : ''}`;
+            mainDiv.onclick = () => selectVersion(exId, 0);
+            mainDiv.innerHTML = `<div><h4>${ex.name}</h4><span>Main</span></div>${selectedIdx === 0 ? '<span style="color:var(--primary);">✔</span>' : ''}`;
             list.appendChild(mainDiv);
-            list.appendChild(altDiv);
+
+            alts.forEach((alt, index) => {
+                const actualIndex = index + 1;
+                const altDiv = document.createElement('div');
+                altDiv.className = `drawer-item ${selectedIdx === actualIndex ? 'active' : ''}`;
+                altDiv.onclick = () => selectVersion(exId, actualIndex);
+                altDiv.innerHTML = `<div><h4>${alt.name}</h4><span>Alternative ${actualIndex}</span></div>${selectedIdx === actualIndex ? '<span style="color:var(--primary);">✔</span>' : ''}`;
+                list.appendChild(altDiv);
+            });
+
             drawer.classList.add('active');
         }
 
-        function selectVersion(exId, showAlt) {
+        function selectVersion(exId, index) {
             const split = splits.find(s => s.id === currentSplitId);
             const ex = split.exercises.find(e => e.id === exId);
-            ex.showAlt = showAlt;
+            ex.selectedAltIndex = index;
             saveData();
             closeDrawer();
             renderExercises();
+        }
+
+        // --- NEW DYNAMIC ALT FORM LOGIC ---
+        function addAltForm(existingData = null) {
+            const container = document.getElementById('alts-dynamic-container');
+            const altIndex = container.children.length;
+
+            const div = document.createElement('div');
+            div.className = 'alt-block';
+
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h3 style="font-size: 1rem; color: var(--primary); margin:0;">Alternative ${altIndex + 1}</h3>
+                    <button type="button" style="background:none; border:none; color:var(--danger); font-size:1.2rem; cursor:pointer;" onclick="this.closest('.alt-block').remove()">&times;</button>
+                </div>
+                
+                <div class="form-group"><label>Alt Name</label><input type="text" class="alt-name" placeholder="Name" value="${existingData ? existingData.name : ''}"></div>
+                
+                <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                    <div class="form-group">
+                        <label>Alt Sets</label>
+                        <input type="number" class="alt-sets" placeholder="3" value="${existingData ? existingData.sets : ''}" oninput="updateDynamicAltWeights(this)">
+                    </div>
+                    <div class="form-group">
+                        <label>Alt Reps</label>
+                        <input type="text" class="alt-reps" placeholder="10" value="${existingData ? existingData.reps : ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Alt RPE</label>
+                        <input type="number" class="alt-rpe" placeholder="8" min="1" max="10" value="${existingData ? (existingData.rpe || '') : ''}">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Alt Weight Mode</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="altMode_${Date.now()}_${altIndex}" value="single" ${(!existingData || existingData.weightMode === 'single') ? 'checked' : ''} onchange="updateDynamicAltWeights(this)"> Single</label>
+                        <label><input type="radio" name="altMode_${Date.now()}_${altIndex}" value="individual" ${(existingData && existingData.weightMode === 'individual') ? 'checked' : ''} onchange="updateDynamicAltWeights(this)"> Per Set</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Alt Weight</label>
+                    <div class="dynamic-weights alt-weights-container"></div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Alt Notes</label>
+                    <textarea class="alt-notes" placeholder="Form cues, feelings, etc.">${existingData && existingData.notes ? existingData.notes : ''}</textarea>
+                </div>
+                
+                <input type="hidden" class="alt-history-data" value='${existingData ? JSON.stringify(existingData.history || []) : "[]"}'>
+            `;
+
+            container.appendChild(div);
+            const setInput = div.querySelector('.alt-sets');
+            updateDynamicAltWeights(setInput, existingData ? existingData.weights : null);
+        }
+
+        function updateDynamicAltWeights(element, existingWeights = null) {
+            const block = element.closest('.alt-block');
+            const setsInput = block.querySelector('.alt-sets');
+            const modeRadios = block.querySelectorAll('input[type="radio"]');
+            const container = block.querySelector('.alt-weights-container');
+
+            let mode = 'single';
+            modeRadios.forEach(r => { if (r.checked) mode = r.value; });
+
+            const sets = parseInt(setsInput.value) || 1;
+            const oldValues = existingWeights !== null ? (Array.isArray(existingWeights) ? existingWeights : [existingWeights]) : Array.from(container.querySelectorAll('input')).map(i => i.value);
+
+            container.innerHTML = '';
+            if (mode === 'single') {
+                container.innerHTML = `<input type="number" placeholder="Weight" class="direct-input alt-weight-input" style="width:100%; text-align:left;" value="${oldValues[0] || ''}">`;
+            } else {
+                for (let i = 0; i < sets; i++) {
+                    const inp = document.createElement('input');
+                    inp.type = 'number'; inp.placeholder = `Set ${i + 1}`;
+                    inp.className = 'alt-weight-input';
+                    inp.style.marginBottom = '10px';
+                    if (oldValues[i]) inp.value = oldValues[i];
+                    container.appendChild(inp);
+                }
+            }
         }
 
         function closeDrawer() { document.getElementById('drawer-version').classList.remove('active'); }
@@ -1275,8 +1505,12 @@
         function viewHistory(exId) {
             const split = splits.find(s => s.id === currentSplitId);
             const ex = split.exercises.find(e => e.id === exId);
-            const data = (ex.showAlt && ex.hasAlt) ? ex.alt : ex;
-            const history = data.history || [];
+
+            const selectedIdx = ex.selectedAltIndex || 0;
+            let alts = ex.alts || (ex.hasAlt ? [ex.alt] : []);
+            const target = selectedIdx > 0 ? alts[selectedIdx - 1] : ex;
+
+            const history = target.history || [];
 
             const container = document.getElementById('history-container');
             container.innerHTML = '';
@@ -1367,17 +1601,12 @@
             e.preventDefault();
             if (currentSplitId === null) return;
 
-            const getWeights = (cId, mode) => {
-                const inputs = document.querySelectorAll(`#${cId} input`);
-                return mode === 'single' ? inputs[0].value : Array.from(inputs).map(i => i.value);
-            };
-
             const id = document.getElementById('ex-id').value;
             const wMode = document.querySelector('input[name="weightMode"]:checked').value;
-            const hasAlt = document.getElementById('has-alt').checked;
             const today = new Date().toLocaleDateString();
 
-            const newMainWeights = getWeights('weight-container-main', wMode);
+            const mainInputs = document.querySelectorAll('#weight-container-main input');
+            const newMainWeights = wMode === 'single' ? mainInputs[0].value : Array.from(mainInputs).map(i => i.value);
 
             let oldEx = null;
             const splitIndex = splits.findIndex(s => s.id === currentSplitId);
@@ -1389,46 +1618,56 @@
 
             if (mainWeightStr && mainWeightStr !== oldMainWeightStr) {
                 mainHistory.unshift({ date: today, weight: mainWeightStr });
-                if (mainHistory.length > 30) mainHistory.pop(); // Keep only the last 30 changes
+                if (mainHistory.length > 30) mainHistory.pop();
             }
 
-            let altData = null;
-            if (hasAlt) {
-                const aMode = document.querySelector('input[name="altWeightMode"]:checked').value;
-                const newAltWeights = getWeights('weight-container-alt', aMode);
-                const altWeightStr = Array.isArray(newAltWeights) ? newAltWeights.join(', ') : newAltWeights;
+            const alts = [];
+            const altBlocks = document.querySelectorAll('.alt-block');
 
-                let altHistory = (oldEx && oldEx.alt && oldEx.alt.history) ? oldEx.alt.history : [];
-                const oldAltWeightStr = (oldEx && oldEx.alt) ? (Array.isArray(oldEx.alt.weights) ? oldEx.alt.weights.join(', ') : oldEx.alt.weights) : '';
+            altBlocks.forEach((block, index) => {
+                const name = block.querySelector('.alt-name').value;
+                if (!name) return;
 
-                if (altWeightStr && altWeightStr !== oldAltWeightStr) {
-                    altHistory.unshift({ date: today, weight: altWeightStr });
-                    if (altHistory.length > 30) altHistory.pop(); // Keep only the last 30 changes
+                const sets = block.querySelector('.alt-sets').value;
+                const reps = block.querySelector('.alt-reps').value;
+                const rpe = block.querySelector('.alt-rpe').value;
+                const notes = block.querySelector('.alt-notes').value;
+
+                let mode = 'single';
+                block.querySelectorAll('input[type="radio"]').forEach(r => { if (r.checked) mode = r.value; });
+
+                const weightInputs = block.querySelectorAll('.alt-weight-input');
+                const weights = mode === 'single' ? weightInputs[0].value : Array.from(weightInputs).map(i => i.value);
+
+                let history = JSON.parse(block.querySelector('.alt-history-data').value || "[]");
+                const weightStr = Array.isArray(weights) ? weights.join(', ') : weights;
+
+                const oldWeightsStr = (oldEx && oldEx.alts && oldEx.alts[index]) ?
+                    (Array.isArray(oldEx.alts[index].weights) ? oldEx.alts[index].weights.join(', ') : oldEx.alts[index].weights) : '';
+
+                if (weightStr && weightStr !== oldWeightsStr) {
+                    history.unshift({ date: today, weight: weightStr });
+                    if (history.length > 30) history.pop();
                 }
 
-                altData = {
-                    name: document.getElementById('alt-name').value,
-                    sets: document.getElementById('alt-sets').value,
-                    reps: document.getElementById('alt-reps').value,
-                    weightMode: aMode,
-                    weights: newAltWeights,
-                    history: altHistory
-                };
-            }
+                alts.push({ name, sets, reps, rpe, notes, weightMode: mode, weights, history });
+            });
 
             const newEx = {
                 id: id ? parseInt(id) : Date.now(),
                 name: document.getElementById('ex-name').value,
                 sets: document.getElementById('ex-sets').value,
                 reps: document.getElementById('ex-reps').value,
+                rpe: document.getElementById('ex-rpe').value,
                 rest: document.getElementById('ex-rest').value,
                 notes: document.getElementById('ex-notes').value,
                 weightMode: wMode,
                 weights: newMainWeights,
                 history: mainHistory,
-                hasAlt: hasAlt,
-                alt: altData,
-                showAlt: (oldEx ? oldEx.showAlt : false)
+                hasAlt: alts.length > 0,
+                alts: alts,
+                selectedAltIndex: (oldEx ? oldEx.selectedAltIndex : 0),
+                isExpanded: (oldEx ? oldEx.isExpanded : false)
             };
 
             if (id) {
@@ -1455,8 +1694,9 @@
             document.getElementById('ex-name').value = ex.name;
             document.getElementById('ex-sets').value = ex.sets;
             document.getElementById('ex-reps').value = ex.reps;
+            document.getElementById('ex-rpe').value = ex.rpe || '';
             document.getElementById('ex-rest').value = ex.rest;
-            document.getElementById('ex-notes').value = ex.notes;
+            document.getElementById('ex-notes').value = ex.notes || '';
 
             const radios = document.getElementsByName('weightMode');
             for (let r of radios) r.checked = (r.value === ex.weightMode);
@@ -1466,21 +1706,11 @@
             if (ex.weightMode === 'single') inputs[0].value = ex.weights;
             else inputs.forEach((inp, i) => inp.value = ex.weights[i] || '');
 
-            const altCheck = document.getElementById('has-alt');
-            altCheck.checked = ex.hasAlt;
-            toggleAltForm();
-            if (ex.hasAlt) {
-                document.getElementById('alt-name').value = ex.alt.name;
-                document.getElementById('alt-sets').value = ex.alt.sets;
-                document.getElementById('alt-reps').value = ex.alt.reps;
-                const aRadios = document.getElementsByName('altWeightMode');
-                for (let r of aRadios) r.checked = (r.value === ex.alt.weightMode);
-                updateWeightInputs('alt');
-                const aInputs = document.querySelectorAll('#weight-container-alt input');
-                if (ex.alt.weightMode === 'single') aInputs[0].value = ex.alt.weights;
-                else aInputs.forEach((inp, i) => inp.value = ex.alt.weights[i] || '');
-            }
+            document.getElementById('alts-dynamic-container').innerHTML = '';
+            let alts = ex.alts || [];
+            if (ex.hasAlt && alts.length === 0) alts.push(ex.alt);
 
+            alts.forEach(alt => addAltForm(alt));
             document.getElementById('modal-ex').classList.add('active');
         }
 
@@ -1538,17 +1768,49 @@
         function openDataModal() {
             const container = document.getElementById('logs-container');
             container.innerHTML = '';
+
             if (workoutLogs.length === 0) {
                 container.innerHTML = '<div style="color:var(--text-sec); text-align:center;">No completed workouts yet.</div>';
             } else {
+                // --- RENDER VOLUME GRAPH ---
+                let graphHtml = '';
+                const validLogs = workoutLogs.filter(l => l.volume && l.volume > 0);
+
+                if (validLogs.length > 0) {
+                    const maxVolume = Math.max(...validLogs.map(l => l.volume));
+                    const recentLogs = validLogs.slice(-15); // Show last 15 workouts in graph
+
+                    let bars = '';
+                    recentLogs.forEach(log => {
+                        const heightPct = Math.max((log.volume / maxVolume) * 100, 5); // min 5% height
+                        const shortDate = log.date.substring(0, 5); // e.g. "12/04"
+
+                        bars += `
+                    <div class="graph-col">
+                        <div class="graph-bar" style="height: ${heightPct}%;" title="${log.volume.toFixed(0)} kg/lbs"></div>
+                        <span class="graph-label">${shortDate}</span>
+                    </div>`;
+                    });
+
+                    graphHtml = `
+                <div class="volume-container">
+                    <h3 style="margin-top:0; font-size:1rem; color:white;">Volume Trend (Load × Reps)</h3>
+                    <div class="volume-graph">${bars}</div>
+                </div>`;
+                }
+
+                // --- RENDER TEXT LOGS ---
                 const ul = document.createElement('ul');
                 ul.className = 'log-list';
                 [...workoutLogs].reverse().forEach(log => {
                     const li = document.createElement('li');
                     li.className = 'log-item';
-                    li.innerHTML = `<span>${log.date} - ${log.splitName}</span><span class="log-time">${log.duration}</span>`;
+                    const volText = log.volume ? `<br><small style="color:var(--text-sec)">Vol: ${log.volume.toFixed(0)}</small>` : '';
+                    li.innerHTML = `<span>${log.date} - ${log.splitName} ${volText}</span><span class="log-time">${log.duration}</span>`;
                     ul.appendChild(li);
                 });
+
+                container.innerHTML = graphHtml;
                 container.appendChild(ul);
             }
             document.getElementById('modal-data').classList.add('active');
@@ -1623,7 +1885,6 @@
             const btn = document.getElementById('btn-session');
 
             if (!isTraining) {
-                // START
                 if (sessionInterval) clearInterval(sessionInterval);
 
                 isTraining = true;
@@ -1639,7 +1900,6 @@
                 }, 1000);
 
             } else {
-                // FINISH
                 const durationSec = Math.floor((Date.now() - sessionStartTime) / 1000);
                 const m = Math.floor(durationSec / 60);
                 const s = durationSec % 60;
@@ -1649,7 +1909,6 @@
                     "Finish Workout?",
                     `Duration: ${timeStr}. Save & Rotate?`,
                     () => {
-                        // Instantly kill the timer
                         clearInterval(sessionInterval);
                         sessionInterval = null;
 
@@ -1658,32 +1917,45 @@
                         if (splitIndex > -1) {
                             const split = splits[splitIndex];
 
-                            // 1. Save Log
+                            // --- CALCULATE TOTAL VOLUME ---
+                            let sessionVolume = 0;
+                            split.exercises.forEach(ex => {
+                                if (ex.completed) {
+                                    const data = (ex.selectedAltIndex > 0) ? ex.alts[ex.selectedAltIndex - 1] : ex;
+                                    const sets = parseInt(data.sets) || 1;
+                                    const reps = parseInt(data.reps) || 1; // Approximates '8-12' to 8 
+
+                                    if (data.weightMode === 'single') {
+                                        const w = parseFloat(data.weights) || 0;
+                                        sessionVolume += (sets * reps * w);
+                                    } else {
+                                        data.weights.forEach(w => {
+                                            sessionVolume += (parseFloat(w) || 0) * reps;
+                                        });
+                                    }
+                                }
+                            });
+
                             workoutLogs.push({
                                 date: new Date().toLocaleDateString(),
                                 splitName: split.name,
-                                duration: timeStr
+                                duration: timeStr,
+                                volume: sessionVolume // Save calculated volume
                             });
 
-                            // Cap at 100 entries to prevent LocalStorage quota crashes
-                            if (workoutLogs.length > 100) {
-                                workoutLogs = workoutLogs.slice(-100);
-                            }
+                            if (workoutLogs.length > 100) workoutLogs = workoutLogs.slice(-100);
                             localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
 
-                            // 2. RESET CHECKBOXES safely
                             if (Array.isArray(split.exercises)) {
                                 split.exercises.forEach(ex => ex.completed = false);
                             }
 
-                            // 3. ROTATE PROGRAM
                             splits.splice(splitIndex, 1);
                             splits.push(split);
                             saveData();
                         }
 
                         showToast("Workout Saved & Rotated!");
-
                         isTraining = false;
                         sessionStartTime = null;
                         btn.className = 'btn-start';
@@ -1699,9 +1971,9 @@
         function resetExForm() {
             document.getElementById('exercise-form').reset();
             document.getElementById('ex-id').value = '';
+            document.getElementById('ex-rpe').value = '';
             document.getElementById('delete-btn').style.display = 'none';
-            document.getElementById('has-alt').checked = false;
-            toggleAltForm();
+            document.getElementById('alts-dynamic-container').innerHTML = '';
             updateWeightInputs('main');
             document.getElementById('modal-title').innerText = "Add Exercise";
         }
