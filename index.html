@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Trainer">
     <title>Training Tracker</title>
-    
+
     <style>
         :root {
             /* Modern Palette */
-            --bg-color: #0f172a; /* Deep Slate */
-            --card-bg: #1e293b;  /* Lighter Slate */
-            --primary: #2dd4bf;  /* Teal/Mint */
+            --bg-color: #0f172a;
+            /* Deep Slate */
+            --card-bg: #1e293b;
+            /* Lighter Slate */
+            --primary: #2dd4bf;
+            /* Teal/Mint */
             --primary-dim: rgba(45, 212, 191, 0.1);
             --text-main: #f8fafc;
             --text-sec: #94a3b8;
-            --danger: #fb7185;   /* Soft Red */
+            --danger: #fb7185;
+            /* Soft Red */
             --danger-dim: rgba(251, 113, 133, 0.1);
             --input-bg: #334155;
             --radius: 16px;
@@ -26,14 +32,19 @@
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding-bottom: calc(140px + var(--safe-bottom)); 
+            padding-bottom: calc(140px + var(--safe-bottom));
             min-height: 100vh;
         }
 
@@ -44,20 +55,69 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid #334155;
-            position: sticky; top: 0; z-index: 50;
-            display: flex; align-items: center; 
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
             padding-top: calc(15px + var(--safe-top));
-            height: auto; min-height: 60px;
+            height: auto;
+            min-height: 60px;
         }
 
-        .back-btn { background: none; border: none; color: var(--text-main); font-size: 1.4rem; margin-right: 15px; cursor: pointer; }
-        h1 { margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; flex-grow: 1; text-transform: uppercase; color: var(--primary); }
-        .data-btn { background: var(--input-bg); border: none; color: var(--text-sec); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; }
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.4rem;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            flex-grow: 1;
+            text-transform: uppercase;
+            color: var(--primary);
+        }
+
+        .data-btn {
+            background: var(--input-bg);
+            border: none;
+            color: var(--text-sec);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
 
         /* --- VIEW CONTAINERS --- */
-        .view-section { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view-section {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* --- SPLIT CARDS (Programs) --- */
         .split-card {
@@ -66,30 +126,61 @@
             border-radius: var(--radius);
             margin-bottom: 16px;
             box-shadow: var(--shadow);
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border: 1px solid #334155;
             position: relative;
             transition: transform 0.1s;
         }
-        .split-card:active { transform: scale(0.98); }
-        .split-info h3 { margin: 0 0 4px 0; font-size: 1.25rem; color: white; }
-        .split-info span { color: var(--text-sec); font-size: 0.85rem; }
-        
+
+        .split-card:active {
+            transform: scale(0.98);
+        }
+
+        .split-info h3 {
+            margin: 0 0 4px 0;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .split-info span {
+            color: var(--text-sec);
+            font-size: 0.85rem;
+        }
+
         /* Modern Action Buttons */
-        .split-actions { display: flex; align-items: center; gap: 12px; }
-        
+        .split-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .icon-btn {
             background: transparent;
             border: none;
             color: var(--text-sec);
             padding: 8px;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
         }
-        .icon-btn.delete { color: var(--danger); }
-        .icon-btn.delete:active { background: var(--danger-dim); }
-        .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+        .icon-btn.delete {
+            color: var(--danger);
+        }
+
+        .icon-btn.delete:active {
+            background: var(--danger-dim);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
 
         /* --- EXERCISE CARDS --- */
         .exercise-card {
@@ -100,18 +191,33 @@
             border: 1px solid #334155;
             box-shadow: var(--shadow);
         }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        
-        .exercise-name { 
-            font-size: 1.15rem; font-weight: 700; color: white; 
-            display: flex; align-items: center; gap: 8px;
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
-        .alt-badge { 
-            font-size: 0.65rem; background: var(--primary-dim); 
-            color: var(--primary); padding: 2px 8px; border-radius: 6px; 
-            font-weight: 700; letter-spacing: 0.5px;
+
+        .exercise-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
+        .alt-badge {
+            font-size: 0.65rem;
+            background: var(--primary-dim);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
         /* Timer Pill */
         .timer-btn {
             background: var(--input-bg);
@@ -121,18 +227,34 @@
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
-            display: flex; align-items: center; gap: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         /* Stats & Weights */
-        .stats-row { display: flex; gap: 12px; margin-bottom: 16px; }
-        .stat-badge {
-            background: #0f172a; border: 1px solid #334155;
-            padding: 6px 12px; border-radius: 8px;
-            font-size: 0.85rem; color: var(--text-sec);
-            flex: 1; text-align: center;
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
         }
-        .stat-badge strong { color: white; display: block; font-size: 1rem; }
+
+        .stat-badge {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-sec);
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-badge strong {
+            color: white;
+            display: block;
+            font-size: 1rem;
+        }
 
         .weight-display {
             background: #0f172a;
@@ -143,86 +265,177 @@
         }
 
         /* Actions Grid */
-        .card-actions { 
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; 
-            padding-top: 16px; border-top: 1px solid #334155; 
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            padding-top: 16px;
+            border-top: 1px solid #334155;
         }
-        .btn-card { 
-            background: transparent; 
-            border: 1px solid #475569; 
-            color: var(--text-sec); 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-size: 0.8rem; font-weight: 600;
+
+        .btn-card {
+            background: transparent;
+            border: 1px solid #475569;
+            color: var(--text-sec);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
-        .btn-card:active { background: #334155; color: white; }
-        .btn-card.highlight { border-color: var(--primary); color: var(--primary); }
+
+        .btn-card:active {
+            background: #334155;
+            color: white;
+        }
+
+        .btn-card.highlight {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
 
         /* --- FAB (Floating Button) --- */
         .fab {
-            position: fixed; bottom: 30px; right: 25px;
-            width: 56px; height: 56px; border-radius: 50%;
-            background: var(--primary); color: #0f172a; 
+            position: fixed;
+            bottom: 30px;
+            right: 25px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #0f172a;
             border: none;
             box-shadow: 0 4px 20px rgba(45, 212, 191, 0.4);
-            font-size: 28px; display: flex; align-items: center; justify-content: center;
-            z-index: 90; transition: transform 0.2s, bottom 0.3s;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 90;
+            transition: transform 0.2s, bottom 0.3s;
         }
-        .fab:active { transform: scale(0.9); }
+
+        .fab:active {
+            transform: scale(0.9);
+        }
 
         /* --- MODALS & DRAWERS (STRUCTURE) --- */
-        .modal-overlay, .drawer-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        .modal-overlay,
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
             z-index: 150;
-            display: none; /* Hidden by default */
-            justify-content: center; align-items: flex-end;
-            opacity: 0; transition: opacity 0.2s;
+            display: none;
+            /* Hidden by default */
+            justify-content: center;
+            align-items: flex-end;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
-        .modal-overlay.active, .drawer-overlay.active { 
-            display: flex; opacity: 1; 
+
+        .modal-overlay.active,
+        .drawer-overlay.active {
+            display: flex;
+            opacity: 1;
         }
 
         .modal-content {
             background: var(--card-bg);
-            width: 100%; max-width: 500px; max-height: 90vh;
-            border-top-left-radius: 24px; border-top-right-radius: 24px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
             border-top: 1px solid #475569;
             padding: 30px 24px;
-            overflow-y: auto; 
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            overflow-y: auto;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
             animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* --- DRAWER CONTENT --- */
         .drawer-content {
             background: var(--card-bg);
-            width: 100%; padding: 25px;
+            width: 100%;
+            padding: 25px;
             border-radius: 24px 24px 0 0;
             border-top: 1px solid #475569;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
             animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .drawer-item {
-            background: #334155; padding: 15px; border-radius: 12px;
-            margin-bottom: 10px; display: flex; justify-content: space-between;
-            align-items: center; cursor: pointer; border: 1px solid transparent;
+            background: #334155;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid transparent;
         }
-        .drawer-item.active { border-color: var(--primary); background: rgba(45, 212, 191, 0.1); }
-        .drawer-item h4 { margin: 0; color: white; }
-        .drawer-item span { color: var(--text-sec); font-size: 0.8rem; }
 
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .drawer-item.active {
+            border-color: var(--primary);
+            background: rgba(45, 212, 191, 0.1);
+        }
 
-        .close-modal { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-sec); font-size: 1.8rem; }
-        h2 { margin-top: 0; color: white; font-size: 1.5rem; }
+        .drawer-item h4 {
+            margin: 0;
+            color: white;
+        }
+
+        .drawer-item span {
+            color: var(--text-sec);
+            font-size: 0.8rem;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-sec);
+            font-size: 1.8rem;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: white;
+            font-size: 1.5rem;
+        }
 
         /* --- INPUTS --- */
-        .form-group { margin-bottom: 20px; }
-        label { display: block; color: var(--text-sec); margin-bottom: 8px; font-size: 0.9rem; font-weight: 500; }
-        
-        input, select, textarea {
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: var(--text-sec);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        input,
+        select,
+        textarea {
             width: 100%;
             background: var(--input-bg);
             border: 1px solid transparent;
@@ -231,479 +444,683 @@
             font-size: 16px;
             color: white;
             transition: border-color 0.2s;
-            appearance: none; -webkit-appearance: none;
+            appearance: none;
+            -webkit-appearance: none;
         }
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
-        
-        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
-        .radio-group label { color: white; display: flex; align-items: center; gap: 8px; }
 
-        .btn-block { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; }
-        .btn-primary { background: var(--primary); color: #0f172a; }
-        .btn-danger { background: rgba(251, 113, 133, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        input:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .radio-group label {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-block {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #0f172a;
+        }
+
+        .btn-danger {
+            background: rgba(251, 113, 133, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
 
         /* --- DIRECT WEIGHT INPUTS --- */
-        .weight-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .dynamic-weights { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px; }
-        
-        .direct-input-group { background: transparent; border: 1px solid #334155; padding: 6px 10px; border-radius: 8px; display: flex; align-items: center; }
-        .direct-label { color: var(--text-sec); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; }
-        .direct-input { font-size: 1.1rem; color: var(--primary); padding: 0; width: 60px; text-align: right; background: transparent; border: none; font-weight: bold; }
-        .direct-input:focus { border-bottom: none; }
+        .weight-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .dynamic-weights {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .direct-input-group {
+            background: transparent;
+            border: 1px solid #334155;
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .direct-label {
+            color: var(--text-sec);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-right: 8px;
+        }
+
+        .direct-input {
+            font-size: 1.1rem;
+            color: var(--primary);
+            padding: 0;
+            width: 60px;
+            text-align: right;
+            background: transparent;
+            border: none;
+            font-weight: bold;
+        }
+
+        .direct-input:focus {
+            border-bottom: none;
+        }
 
         /* --- TIMER OVERLAY --- */
         #timer-overlay {
-            position: fixed; bottom: 0; left: 0; right: 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: #1e293b;
             border-top: 1px solid #334155;
             padding: 20px 24px;
-            display: flex; align-items: center; justify-content: space-between;
-            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 100;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
         }
-        #timer-overlay.visible { transform: translateY(0); }
-        .timer-display { font-size: 2rem; color: var(--primary); font-family: monospace; font-weight: 700; }
-        .timer-controls { display: flex; gap: 12px; }
-        .btn-timer-ctrl { background: #334155; border: none; color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1rem; font-weight: bold; }
-        .btn-timer-ctrl.stop { background: var(--danger); color: white; }
-        
+
+        #timer-overlay.visible {
+            transform: translateY(0);
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            color: var(--primary);
+            font-family: monospace;
+            font-weight: 700;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-timer-ctrl {
+            background: #334155;
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .btn-timer-ctrl.stop {
+            background: var(--danger);
+            color: white;
+        }
+
         /* --- SESSION BUTTON --- */
-        .session-controls { background: transparent; border: 1px dashed #334155; padding: 10px; margin-bottom: 20px; border-radius: var(--radius); }
-        .btn-start { width: 100%; background: var(--primary); color: #0f172a; padding: 16px; border: none; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
-        .btn-finish { width: 100%; background: var(--danger); color: white; padding: 16px; border: none; border-radius: 12px; font-weight: 800; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+        .session-controls {
+            background: transparent;
+            border: 1px dashed #334155;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: var(--radius);
+        }
+
+        .btn-start {
+            width: 100%;
+            background: var(--primary);
+            color: #0f172a;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .btn-finish {
+            width: 100%;
+            background: var(--danger);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
 
         /* --- LOGS --- */
-        .log-list { list-style: none; padding: 0; margin: 15px 0; max-height: 250px; overflow-y: auto; }
-        .log-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #334155; color: var(--text-sec); font-size: 0.9rem; }
-        .log-time { color: var(--primary); font-weight: 600; }
+        .log-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #334155;
+            color: var(--text-sec);
+            font-size: 0.9rem;
+        }
+
+        .log-time {
+            color: var(--primary);
+            font-weight: 600;
+        }
 
         /* --- TOAST --- */
         #toast {
-            visibility: hidden; min-width: 200px; background-color: #0f172a; color: white; border: 1px solid #334155;
-            text-align: center; border-radius: 50px; padding: 12px 24px; position: fixed;
-            z-index: 200; left: 50%; bottom: 100px; transform: translateX(-50%);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s;
+            visibility: hidden;
+            min-width: 200px;
+            background-color: #0f172a;
+            color: white;
+            border: 1px solid #334155;
+            text-align: center;
+            border-radius: 50px;
+            padding: 12px 24px;
+            position: fixed;
+            z-index: 200;
+            left: 50%;
+            bottom: 100px;
+            transform: translateX(-50%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        #toast.show { visibility: visible; opacity: 1; }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
 
         /* --- TOGGLES --- */
-        .toggle-section { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
-        .toggle-header { display: flex; justify-content: space-between; align-items: center; }
+        .toggle-section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+        }
+
+        .toggle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
         /* Utilities */
-        .hidden { display: none !important; }
-        
+        .hidden {
+            display: none !important;
+        }
+
         /* iOS Fixes */
-        .modal-overlay, .drawer-overlay { cursor: pointer; }
-        .modal-content, .drawer-content { cursor: default; }
+        .modal-overlay,
+        .drawer-overlay {
+            cursor: pointer;
+        }
+
+        .modal-content,
+        .drawer-content {
+            cursor: default;
+        }
 
         /* --- CHECKBOX & COLLAPSE STYLES --- */
-    .check-btn {
-        width: 24px; height: 24px; 
-        border: 2px solid var(--text-sec); border-radius: 50%;
-        background: transparent; color: transparent;
-        margin-right: 12px; flex-shrink: 0; cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        transition: all 0.2s;
-    }
-    .check-btn.checked {
-        background: var(--primary); border-color: var(--primary); color: #0f172a;
-    }
-    
-    /* Collapsed State */
-    .exercise-card.completed {
-        opacity: 0.4;
-        background: #111; /* Very dark background */
-        border-color: #333;
-    }
-    .exercise-card.completed .exercise-name {
-        text-decoration: line-through;
-        color: var(--text-sec);
-    }
-    /* Hide these elements when collapsed */
-    .exercise-card.completed .stats-row,
-    .exercise-card.completed .weight-display,
-    .exercise-card.completed .card-actions,
-    .exercise-card.completed .timer-btn,
-    .exercise-card.completed .notes-display {
-        display: none !important;
-    }
-    /* Adjust header margin when collapsed */
-    .exercise-card.completed .card-header { margin-bottom: 0; }
+        .check-btn {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-sec);
+            border-radius: 50%;
+            background: transparent;
+            color: transparent;
+            margin-right: 12px;
+            flex-shrink: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
 
-    /* --- COLLAPSIBLE DRAWER STYLES --- */
-    .exercise-card {
-        transition: all 0.3s ease;
-        overflow: hidden; /* Essential for collapse */
-        padding: 0; /* padding moved to inner elements */
-    }
-    
-    .card-header {
-        padding: 20px;
-        margin-bottom: 0;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: var(--card-bg);
-    }
+        .check-btn.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #0f172a;
+        }
 
-    /* The Chevron Icon that rotates */
-    .chevron {
-        transition: transform 0.3s;
-        width: 24px; height: 24px;
-        fill: var(--text-sec);
-        margin-left: 10px;
-    }
-    .expanded .chevron { transform: rotate(180deg); }
+        /* Collapsed State */
+        .exercise-card.completed {
+            opacity: 0.4;
+            background: #111;
+            /* Very dark background */
+            border-color: #333;
+        }
 
-    /* The container for everything else (Sets, Weights, Buttons) */
-    .exercise-details {
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease-out, opacity 0.3s ease;
-        background: #182233; /* Slightly darker inner bg */
-    }
-    
-    .expanded .exercise-details {
-        max-height: 1000px; /* Allow expansion */
-        opacity: 1;
-        padding: 20px; /* Changed from "0 20px 20px 20px" to add space at top */
-        border-top: 1px solid #334155;
-    }
+        .exercise-card.completed .exercise-name {
+            text-decoration: line-through;
+            color: var(--text-sec);
+        }
 
-    /* Completed State Overrides */
-    .exercise-card.completed { opacity: 0.5; }
-    .exercise-card.completed .exercise-name { text-decoration: line-through; color: var(--text-sec); }
+        /* Hide these elements when collapsed */
+        .exercise-card.completed .stats-row,
+        .exercise-card.completed .weight-display,
+        .exercise-card.completed .card-actions,
+        .exercise-card.completed .timer-btn,
+        .exercise-card.completed .notes-display {
+            display: none !important;
+        }
 
+        /* Adjust header margin when collapsed */
+        .exercise-card.completed .card-header {
+            margin-bottom: 0;
+        }
     </style>
 
 </head>
+
 <body>
 
-<header>
-    <button id="back-btn" class="back-btn hidden" onclick="goHome()">&#8592;</button>
-    <h1 id="page-title">My Programs</h1>
-    <button class="data-btn" onclick="openDataModal()">DATA</button>
-</header>
+    <header>
+        <button id="back-btn" class="back-btn hidden" onclick="goHome()">&#8592;</button>
+        <h1 id="page-title">My Programs</h1>
+        <button class="data-btn" onclick="openDataModal()">DATA</button>
+    </header>
 
-<div id="view-splits" class="view-section active">
-    <div id="split-list"></div>
-</div>
-
-<div id="view-exercises" class="view-section">
-    <div id="session-controls" class="session-controls hidden">
-        <button id="btn-session" class="btn-start" onclick="toggleSession()">START TRAINING</button>
+    <div id="view-splits" class="view-section active">
+        <div id="split-list"></div>
     </div>
-    <div id="exercise-list"></div>
-</div>
 
-<button class="fab" onclick="handleFabClick()">+</button>
-
-<div id="timer-overlay">
-    <div class="timer-text">
-        <span style="font-size:0.75rem; color:var(--text-sec); letter-spacing:1px; text-transform:uppercase;">Resting</span>
-        <div id="timer-count" class="timer-display">00:00</div>
+    <div id="view-exercises" class="view-section">
+        <div id="session-controls" class="session-controls hidden">
+            <button id="btn-session" class="btn-start" onclick="toggleSession()">START TRAINING</button>
+        </div>
+        <div id="exercise-list"></div>
     </div>
-    <div class="timer-controls">
-        <button class="btn-timer-ctrl" onclick="adjustTimer(-10)">-10</button>
-        <button class="btn-timer-ctrl" onclick="adjustTimer(30)">+30</button>
-        <button class="btn-timer-ctrl stop" onclick="stopTimer()">&times;</button>
+
+    <button class="fab" onclick="handleFabClick()">+</button>
+
+    <div id="timer-overlay">
+        <div class="timer-text">
+            <span
+                style="font-size:0.75rem; color:var(--text-sec); letter-spacing:1px; text-transform:uppercase;">Resting</span>
+            <div id="timer-count" class="timer-display">00:00</div>
+        </div>
+        <div class="timer-controls">
+            <button class="btn-timer-ctrl" onclick="adjustTimer(-10)">-10</button>
+            <button class="btn-timer-ctrl" onclick="adjustTimer(30)">+30</button>
+            <button class="btn-timer-ctrl stop" onclick="stopTimer()">&times;</button>
+        </div>
     </div>
-</div>
 
-<div class="modal-overlay" id="modal-split">
-    <div class="modal-content">
-        <button class="close-modal" onclick="closeModal('modal-split')">&times;</button>
-        <h2>New Program</h2>
-        <form id="split-form">
-            <div class="form-group">
-                <label>Program Name</label>
-                <input type="text" id="split-name" required placeholder="e.g. Legs, Push, Upper Body">
-            </div>
-            <button type="submit" class="btn-block btn-primary">Create Program</button>
-        </form>
-    </div>
-</div>
-
-<div class="modal-overlay" id="modal-ex">
-    <div class="modal-content">
-        <button class="close-modal" onclick="closeModal('modal-ex')">&times;</button>
-        <h2 id="modal-title">Add Exercise</h2>
-        
-        <form id="exercise-form">
-            <input type="hidden" id="ex-id">
-            
-            <div class="form-group">
-                <label>Exercise Name</label>
-                <input type="text" id="ex-name" required placeholder="e.g. Bench Press">
-            </div>
-
-            <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+    <div class="modal-overlay" id="modal-split">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('modal-split')">&times;</button>
+            <h2>New Program</h2>
+            <form id="split-form">
                 <div class="form-group">
-                    <label>Sets</label>
-                    <input type="number" id="ex-sets" required placeholder="3" oninput="updateWeightInputs('main')">
+                    <label>Program Name</label>
+                    <input type="text" id="split-name" required placeholder="e.g. Legs, Push, Upper Body">
                 </div>
+                <button type="submit" class="btn-block btn-primary">Create Program</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-ex">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('modal-ex')">&times;</button>
+            <h2 id="modal-title">Add Exercise</h2>
+
+            <form id="exercise-form">
+                <input type="hidden" id="ex-id">
+
                 <div class="form-group">
-                    <label>Reps</label>
-                    <input type="text" id="ex-reps" placeholder="8-12">
+                    <label>Exercise Name</label>
+                    <input type="text" id="ex-name" required placeholder="e.g. Bench Press">
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>Rest Time (for Timer)</label>
-                <input type="text" id="ex-rest" placeholder="e.g. 90, 1m 30s">
-            </div>
-
-            <div class="form-group">
-                <label>Weight Tracking Mode</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="weightMode" value="single" checked onchange="updateWeightInputs('main')"> Single</label>
-                    <label><input type="radio" name="weightMode" value="individual" onchange="updateWeightInputs('main')"> Per Set</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Weight (kg/lbs)</label>
-                <div id="weight-container-main" class="dynamic-weights"></div>
-            </div>
-
-            <div class="form-group">
-                <label>Notes</label>
-                <textarea id="ex-notes" placeholder="Form cues, feelings, etc."></textarea>
-            </div>
-
-            <div class="toggle-section">
-                <div class="toggle-header" onclick="toggleAltForm()">
-                    <label style="margin:0; pointer-events:none;">Add Alternative Exercise?</label>
-                    <input type="checkbox" id="has-alt" style="width:auto;">
-                </div>
-                <div id="alt-form-container" class="hidden" style="margin-top: 15px; border-top: 1px solid #334155; padding-top: 15px;">
-                    <h3 style="font-size: 1rem; color: var(--primary);">Alternative Details</h3>
-                    <div class="form-group"><label>Alt Name</label><input type="text" id="alt-name" placeholder="Name"></div>
-                    <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                        <div class="form-group"><label>Alt Sets</label><input type="number" id="alt-sets" placeholder="3" oninput="updateWeightInputs('alt')"></div>
-                        <div class="form-group"><label>Alt Reps</label><input type="text" id="alt-reps" placeholder="10"></div>
+                <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div class="form-group">
+                        <label>Sets</label>
+                        <input type="number" id="ex-sets" required placeholder="3" oninput="updateWeightInputs('main')">
                     </div>
                     <div class="form-group">
-                        <label>Alt Weight Mode</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="altWeightMode" value="single" checked onchange="updateWeightInputs('alt')"> Single</label>
-                            <label><input type="radio" name="altWeightMode" value="individual" onchange="updateWeightInputs('alt')"> Per Set</label>
+                        <label>Reps</label>
+                        <input type="text" id="ex-reps" placeholder="8-12">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Rest Time (for Timer)</label>
+                    <input type="text" id="ex-rest" placeholder="e.g. 90, 1m 30s">
+                </div>
+
+                <div class="form-group">
+                    <label>Weight Tracking Mode</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="weightMode" value="single" checked
+                                onchange="updateWeightInputs('main')"> Single</label>
+                        <label><input type="radio" name="weightMode" value="individual"
+                                onchange="updateWeightInputs('main')"> Per Set</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Weight (kg/lbs)</label>
+                    <div id="weight-container-main" class="dynamic-weights"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="ex-notes" placeholder="Form cues, feelings, etc."></textarea>
+                </div>
+
+                <div class="toggle-section">
+                    <div class="toggle-header" onclick="toggleAltForm()">
+                        <label style="margin:0; pointer-events:none;">Add Alternative Exercise?</label>
+                        <input type="checkbox" id="has-alt" style="width:auto;">
+                    </div>
+                    <div id="alt-form-container" class="hidden"
+                        style="margin-top: 15px; border-top: 1px solid #334155; padding-top: 15px;">
+                        <h3 style="font-size: 1rem; color: var(--primary);">Alternative Details</h3>
+                        <div class="form-group"><label>Alt Name</label><input type="text" id="alt-name"
+                                placeholder="Name"></div>
+                        <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                            <div class="form-group"><label>Alt Sets</label><input type="number" id="alt-sets"
+                                    placeholder="3" oninput="updateWeightInputs('alt')"></div>
+                            <div class="form-group"><label>Alt Reps</label><input type="text" id="alt-reps"
+                                    placeholder="10"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Alt Weight Mode</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="altWeightMode" value="single" checked
+                                        onchange="updateWeightInputs('alt')"> Single</label>
+                                <label><input type="radio" name="altWeightMode" value="individual"
+                                        onchange="updateWeightInputs('alt')"> Per Set</label>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>Alt Weight</label>
+                            <div id="weight-container-alt" class="dynamic-weights"></div>
                         </div>
                     </div>
-                    <div class="form-group"><label>Alt Weight</label><div id="weight-container-alt" class="dynamic-weights"></div></div>
                 </div>
+
+                <button type="submit" class="btn-block btn-primary">Save Exercise</button>
+                <button type="button" class="btn-block btn-danger" id="delete-btn" onclick="deleteExercise()"
+                    style="display:none;">Delete</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-history">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="margin:0;">Weight History</h2>
+                <button class="close-modal" onclick="closeModal('modal-history')">&times;</button>
+            </div>
+            <div id="history-container"></div>
+            <button class="btn-block btn-primary" onclick="closeModal('modal-history')"
+                style="margin-top:20px;">Close</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-data">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('modal-data')">&times;</button>
+            <h2>App Data</h2>
+
+            <div style="margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
+                <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(this)">
+
+                <button class="btn-block" style="background:#334155; color:white; margin-bottom:10px;"
+                    onclick="exportData()">&#128190; Save Backup (Export)</button>
+                <button class="btn-block"
+                    style="background:#334155; color:var(--primary); border:1px solid var(--primary); margin-bottom:10px;"
+                    onclick="document.getElementById('import-file').click()">&#128193; Load Backup (Import)</button>
+                <button class="btn-block btn-danger" onclick="nukeData()">&#9888; Delete All Data</button>
             </div>
 
-            <button type="submit" class="btn-block btn-primary">Save Exercise</button>
-            <button type="button" class="btn-block btn-danger" id="delete-btn" onclick="deleteExercise()" style="display:none;">Delete</button>
-        </form>
-    </div>
-</div>
-
-<div class="modal-overlay" id="modal-history">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="margin:0;">Weight History</h2>
-            <button class="close-modal" onclick="closeModal('modal-history')">&times;</button>
-        </div>
-        <div id="history-container"></div>
-        <button class="btn-block btn-primary" onclick="closeModal('modal-history')" style="margin-top:20px;">Close</button>
-    </div>
-</div>
-
-<div class="modal-overlay" id="modal-data">
-    <div class="modal-content">
-        <button class="close-modal" onclick="closeModal('modal-data')">&times;</button>
-        <h2>App Data</h2>
-        
-        <div style="margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
-            <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(this)">
-            
-            <button class="btn-block" style="background:#334155; color:white; margin-bottom:10px;" onclick="exportData()">&#128190; Save Backup (Export)</button>
-            <button class="btn-block" style="background:#334155; color:var(--primary); border:1px solid var(--primary); margin-bottom:10px;" onclick="document.getElementById('import-file').click()">&#128193; Load Backup (Import)</button>
-            <button class="btn-block btn-danger" onclick="nukeData()">&#9888; Delete All Data</button>
-        </div>
-
-        <h3>Workout Logs</h3>
-        <div id="logs-container"></div>
-    </div>
-</div>
-
-<div class="drawer-overlay" id="drawer-version">
-    <div class="drawer-content">
-        <h3 style="margin-top:0; margin-bottom:15px; color:var(--text-sec);">Select Variation</h3>
-        <div id="drawer-list"></div>
-        <button class="btn-block" onclick="closeDrawer()" style="background:transparent; color:var(--text-sec); border:1px solid #475569; margin-top:10px;">Cancel</button>
-    </div>
-</div>
-
-<div id="toast">Saved!</div>
-
-<div class="modal-overlay" id="modal-confirm" style="z-index: 300;">
-    <div class="modal-content">
-        <h3 id="confirm-title" style="margin-top:0;">Confirmation</h3>
-        <p id="confirm-text" style="color:var(--text-sec); margin-bottom:20px;">Are you sure?</p>
-        
-        <div style="display:flex; gap:10px;">
-            <button class="btn-block" style="background:#334155; margin-top:0;" onclick="closeConfirmModal()">Cancel</button>
-            <button class="btn-block btn-primary" id="confirm-yes-btn" style="margin-top:0;">Confirm</button>
+            <h3>Workout Logs</h3>
+            <div id="logs-container"></div>
         </div>
     </div>
-</div>
 
-<script>
-    // --- STATE MANAGEMENT ---
-    let splits = JSON.parse(localStorage.getItem('trainingSplits')) || [];
-    let workoutLogs = JSON.parse(localStorage.getItem('workoutLogs')) || [];
-    let currentSplitId = null;
-    
-    // Timer Variables
-    let restTimerInterval = null;
-    let sessionInterval = null;
-    let isTraining = false;
+    <div class="drawer-overlay" id="drawer-version">
+        <div class="drawer-content">
+            <h3 style="margin-top:0; margin-bottom:15px; color:var(--text-sec);">Select Variation</h3>
+            <div id="drawer-list"></div>
+            <button class="btn-block" onclick="closeDrawer()"
+                style="background:transparent; color:var(--text-sec); border:1px solid #475569; margin-top:10px;">Cancel</button>
+        </div>
+    </div>
 
-    // --- HELPER FUNCTIONS ---
-    function showConfirm(title, message, onConfirm) {
-        document.getElementById('confirm-title').innerText = title;
-        document.getElementById('confirm-text').innerText = message;
-        confirmCallback = onConfirm;
-        document.getElementById('modal-confirm').classList.add('active');
-    }
+    <div id="toast">Saved!</div>
 
-    function closeConfirmModal() {
-        document.getElementById('modal-confirm').classList.remove('active');
-        confirmCallback = null;
-    }
+    <div class="modal-overlay" id="modal-confirm" style="z-index: 300;">
+        <div class="modal-content">
+            <h3 id="confirm-title" style="margin-top:0;">Confirmation</h3>
+            <p id="confirm-text" style="color:var(--text-sec); margin-bottom:20px;">Are you sure?</p>
 
-    // --- NATIVE NAVIGATION (SWIPE BACK) ---
-    // 1. Listen for the native back button/swipe
-    window.onpopstate = function(event) {
-        // If we are currently inside a program
-        if (currentSplitId !== null) {
-            if (isTraining) {
-                // A. Workout is active: Block the back action
-                // Push the state back immediately to "undo" the navigation
-                history.pushState({view: 'split'}, '', ''); 
-                
-                // Show the confirm modal
-                showConfirm(
-                    "Workout Active", 
-                    "Going back will stop the timer. Continue?",
-                    () => {
-                        // If User Confirms:
-                        isTraining = false; // Disable flag to allow exit
-                        clearInterval(sessionInterval); // Stop timer
-                        history.back(); // Trigger back again (this time it will pass)
+            <div style="display:flex; gap:10px;">
+                <button class="btn-block" style="background:#334155; margin-top:0;"
+                    onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn-block btn-primary" id="confirm-yes-btn" style="margin-top:0;"
+                    onclick="handleConfirmClick()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        let splits = JSON.parse(localStorage.getItem('trainingSplits')) || [];
+        let workoutLogs = JSON.parse(localStorage.getItem('workoutLogs')) || [];
+        let currentSplitId = null;
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let sessionStartTime = null;
+        let sessionInterval = null;
+        let isTraining = false;
+        let confirmCallback = null;
+
+        // --- HELPER FUNCTIONS ---
+        function showConfirm(title, message, onConfirm) {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-text').innerText = message;
+            confirmCallback = onConfirm;
+            document.getElementById('modal-confirm').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('modal-confirm').classList.remove('active');
+            confirmCallback = null;
+        }
+
+        function handleConfirmClick() {
+            if (confirmCallback) {
+                try {
+                    confirmCallback();
+                } catch (e) {
+                    console.error("Error executing confirmation:", e);
+                }
+            }
+            closeConfirmModal();
+        }
+
+        // --- NATIVE NAVIGATION (SWIPE BACK) ---
+        // 1. Listen for the native back button/swipe
+        window.onpopstate = function (event) {
+            // If we are currently inside a program
+            if (currentSplitId !== null) {
+                if (isTraining) {
+                    // A. Workout is active: Block the back action
+                    // Push the state back immediately to "undo" the navigation
+                    history.pushState({ view: 'split' }, '', '');
+
+                    // Show the confirm modal
+                    showConfirm(
+                        "Workout Active",
+                        "Going back will stop the timer. Continue?",
+                        () => {
+                            // If User Confirms:
+                            isTraining = false; // Disable flag to allow exit
+                            clearInterval(sessionInterval); // Stop timer
+                            history.back(); // Trigger back again (this time it will pass)
+                        }
+                    );
+                } else {
+                    // B. No workout: Just update the UI to Home
+                    internalGoHomeUI();
+                }
+            }
+        };
+
+        // 2. Helper to just reset the UI (Visuals only)
+        function internalGoHomeUI() {
+            currentSplitId = null;
+            document.getElementById('view-splits').classList.add('active');
+            document.getElementById('view-exercises').classList.remove('active');
+            document.getElementById('session-controls').classList.add('hidden');
+            document.getElementById('back-btn').classList.add('hidden');
+            document.getElementById('page-title').innerText = "My Programs";
+            renderSplits();
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const confirmBtn = document.getElementById('confirm-yes-btn');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', () => {
+                    if (confirmCallback) confirmCallback();
+                    closeConfirmModal();
+                });
+            }
+
+            const now = new Date();
+            const dateEl = document.getElementById('date-display');
+            if (dateEl) dateEl.innerText = now.toLocaleDateString();
+
+            renderSplits();
+
+            // Legacy Migration
+            const oldData = localStorage.getItem('trainingData');
+            if (oldData && splits.length === 0) {
+                try {
+                    const oldEx = JSON.parse(oldData);
+                    if (Array.isArray(oldEx) && oldEx.length > 0) {
+                        splits.push({ id: Date.now(), name: "Imported Workout", exercises: oldEx });
+                        localStorage.setItem('trainingSplits', JSON.stringify(splits));
+                        renderSplits();
                     }
-                );
+                } catch (e) { console.error("Migration failed", e); }
+            }
+        });
+
+        // --- NAVIGATION ---
+        function goHome() {
+            // Just trigger the native browser back action.
+            // The window.onpopstate listener above will handle the UI and Confirmation.
+            history.back();
+        }
+
+        function openSplit(id) {
+            // Tell browser we moved forward (Enables Swipe Back)
+            history.pushState({ view: 'split' }, '', '');
+
+            currentSplitId = id;
+            const split = splits.find(s => s.id === id);
+
+            document.getElementById('view-splits').classList.remove('active');
+            document.getElementById('view-exercises').classList.add('active');
+            document.getElementById('back-btn').classList.remove('hidden');
+            document.getElementById('page-title').innerText = split.name;
+
+            // Show Session Controls
+            const sessionDiv = document.getElementById('session-controls');
+            sessionDiv.classList.remove('hidden');
+
+            // Reset button state if not currently training
+            if (!isTraining) {
+                const btn = document.getElementById('btn-session');
+                btn.className = 'btn-start';
+                btn.innerHTML = "START TRAINING";
+            }
+
+            renderExercises();
+        }
+
+        function handleFabClick() {
+            if (currentSplitId === null) {
+                document.getElementById('modal-split').classList.add('active');
+                document.getElementById('split-name').value = '';
+                document.getElementById('split-name').focus();
             } else {
-                // B. No workout: Just update the UI to Home
-                internalGoHomeUI();
+                resetExForm();
+                document.getElementById('modal-ex').classList.add('active');
+                updateWeightInputs('main');
             }
         }
-    };
 
-    // 2. Helper to just reset the UI (Visuals only)
-    function internalGoHomeUI() {
-        currentSplitId = null;
-        document.getElementById('view-splits').classList.add('active');
-        document.getElementById('view-exercises').classList.remove('active');
-        document.getElementById('session-controls').classList.add('hidden');
-        document.getElementById('back-btn').classList.add('hidden');
-        document.getElementById('page-title').innerText = "My Programs";
-        renderSplits();
-    }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    // --- INITIALIZATION ---
-    document.addEventListener('DOMContentLoaded', () => {
-        // 1. Restore Session Timer
-        const storedSessionStart = localStorage.getItem('sessionStartTime');
-        if (storedSessionStart) {
-            isTraining = true;
-            resumeSessionUI(parseInt(storedSessionStart));
-        }
-
-        // 2. Restore Rest Timer
-        const storedRestTarget = localStorage.getItem('restTargetTime');
-        if (storedRestTarget) {
-            const remaining = Math.ceil((parseInt(storedRestTarget) - Date.now()) / 1000);
-            if (remaining > 0) {
-                startTimer(remaining, true); // true = resuming
-            } else {
-                localStorage.removeItem('restTargetTime'); // Timer finished while away
+        // --- RENDER LOGIC (UPDATED WITH ICONS) ---
+        function renderSplits() {
+            const list = document.getElementById('split-list');
+            list.innerHTML = '';
+            if (splits.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding: 60px 20px; color: var(--text-sec); font-weight:300;">No programs yet.<br><br>Tap the <b>+</b> button to create one.</div>';
+                return;
             }
-        }
-
-        // 3. Render
-        renderSplits();
-        const dateEl = document.getElementById('date-display');
-        if(dateEl) dateEl.innerText = new Date().toLocaleDateString();
-    });
-
-    // --- NAVIGATION ---
-    function goHome() {
-        // Just trigger the native browser back action.
-        // The window.onpopstate listener above will handle the UI and Confirmation.
-        history.back(); 
-    }
-
-    function openSplit(id) {
-        // Tell browser we moved forward (Enables Swipe Back)
-        history.pushState({view: 'split'}, '', '');
-
-        currentSplitId = id;
-        const split = splits.find(s => s.id === id);
-        
-        document.getElementById('view-splits').classList.remove('active');
-        document.getElementById('view-exercises').classList.add('active');
-        document.getElementById('back-btn').classList.remove('hidden');
-        document.getElementById('page-title').innerText = split.name;
-        
-        // Show Session Controls
-        const sessionDiv = document.getElementById('session-controls');
-        sessionDiv.classList.remove('hidden');
-        
-        // Reset button state if not currently training
-        if(!isTraining) {
-            const btn = document.getElementById('btn-session');
-            btn.className = 'btn-start';
-            btn.innerHTML = "START TRAINING";
-        }
-        
-        renderExercises();
-    }
-
-    function handleFabClick() {
-        if (currentSplitId === null) {
-            document.getElementById('modal-split').classList.add('active');
-            document.getElementById('split-name').value = '';
-            document.getElementById('split-name').focus();
-        } else {
-            resetExForm();
-            document.getElementById('modal-ex').classList.add('active');
-            updateWeightInputs('main');
-        }
-    }
-
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-    // --- RENDER LOGIC (UPDATED WITH ICONS) ---
-    function renderSplits() {
-        const list = document.getElementById('split-list');
-        list.innerHTML = '';
-        if(splits.length === 0) {
-            list.innerHTML = '<div style="text-align:center; padding: 60px 20px; color: var(--text-sec); font-weight:300;">No programs yet.<br><br>Tap the <b>+</b> button to create one.</div>';
-            return;
-        }
-        splits.forEach(s => {
-            const div = document.createElement('div');
-            div.className = 'split-card';
-            div.innerHTML = `
+            splits.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'split-card';
+                div.innerHTML = `
                 <div class="split-info" onclick="openSplit(${s.id})" style="flex-grow:1; cursor:pointer;">
                     <h3>${s.name}</h3>
                     <span>${s.exercises.length} Exercises</span>
@@ -715,614 +1132,593 @@
                     <div style="font-size:1.2rem; color:var(--text-sec); opacity:0.5; pointer-events:none;">&#10095;</div>
                 </div>
             `;
-            list.appendChild(div);
-        });
-    }
-
-    function renderExercises() {
-        const list = document.getElementById('exercise-list');
-        list.innerHTML = '';
-        const split = splits.find(s => s.id === currentSplitId);
-        
-        if(!split || split.exercises.length === 0) {
-            list.innerHTML = '<div style="text-align:center; padding: 50px; color: var(--text-sec);">No exercises here.<br>Tap + to add one.</div>';
-            return;
+                list.appendChild(div);
+            });
         }
 
-        split.exercises.forEach(ex => {
-            const isAlt = ex.showAlt && ex.hasAlt;
-            const data = isAlt ? ex.alt : ex;
-            const scope = isAlt ? 'alt' : 'main';
-            const isDone = ex.completed || false;
-            // Default to collapsed unless explicitly expanded (optional state tracking)
-            const isExpanded = ex.isExpanded || false; 
+        function renderExercises() {
+            const list = document.getElementById('exercise-list');
+            list.innerHTML = '';
+            const split = splits.find(s => s.id === currentSplitId);
 
-            // Weight Inputs HTML Generation
-            let weightInputsHtml = '<div class="weight-row">';
-            if (data.weightMode === 'individual' && Array.isArray(data.weights)) {
-                data.weights.forEach((w, i) => {
-                    weightInputsHtml += `
+            if (!split || split.exercises.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding: 50px; color: var(--text-sec);">No exercises here.<br>Tap + to add one.</div>';
+                return;
+            }
+
+            split.exercises.forEach(ex => {
+                const isAlt = ex.showAlt && ex.hasAlt;
+                const data = isAlt ? ex.alt : ex;
+                const scope = isAlt ? 'alt' : 'main';
+                const isDone = ex.completed || false; // Check state
+
+                let weightInputsHtml = '<div class="weight-row">';
+                if (data.weightMode === 'individual' && Array.isArray(data.weights)) {
+                    data.weights.forEach((w, i) => {
+                        weightInputsHtml += `
                         <div class="direct-input-group">
-                            <span class="direct-label">SET ${i+1}</span>
+                            <span class="direct-label">SET ${i + 1}</span>
                             <input type="number" class="direct-input" value="${w}" onchange="quickUpdateWeight(${ex.id}, '${scope}', ${i}, this.value)">
                         </div>`;
-                });
-            } else {
-                weightInputsHtml += `
+                    });
+                } else {
+                    weightInputsHtml += `
                     <div class="direct-input-group">
                         <span class="direct-label">LOAD</span>
                         <input type="number" class="direct-input" value="${data.weights}" onchange="quickUpdateWeight(${ex.id}, '${scope}', null, this.value)">
                     </div>`;
-            }
-            weightInputsHtml += '</div>';
+                }
+                weightInputsHtml += '</div>';
 
-            const card = document.createElement('div');
-            card.className = `exercise-card ${isExpanded ? 'expanded' : ''} ${isDone ? 'completed' : ''}`;
-            
-            // Note: Card Header handles the click to toggle
-            card.innerHTML = `
-                <div class="card-header" onclick="toggleExpand(${ex.id})">
-                    <div style="display:flex; align-items:center; flex-grow:1;">
-                        <div class="check-btn ${isDone ? 'checked' : ''}" onclick="event.stopPropagation(); toggleComplete(${ex.id})">
+                const card = document.createElement('div');
+                card.id = `exercise-card-${ex.id}`;
+                card.className = `exercise-card ${isDone ? 'completed' : ''}`;
+                card.innerHTML = `
+                <div class="card-header">
+                    <div style="display:flex; align-items:center;">
+                        <div class="check-btn ${isDone ? 'checked' : ''}" onclick="toggleComplete(${ex.id})">
                             ${isDone ? '&#10003;' : ''}
                         </div>
                         
-                        <div class="exercise-name">
+                        <div class="exercise-name" onclick="openVersionDrawer(${ex.id})">
                             ${data.name} 
                             ${isAlt ? '<span class="alt-badge">ALT</span>' : ''}
+                            ${ex.hasAlt ? '<span style="font-size:0.8rem; color:var(--text-sec); margin-left:6px; transform:translateY(1px);">▼</span>' : ''}
                         </div>
                     </div>
-                    
-                    <div style="display:flex; align-items:center;">
-                        <button class="timer-btn" onclick="event.stopPropagation(); initTimer('${ex.rest || '60'}')">
-                            <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
-                            ${ex.rest || 'Timer'}
-                        </button>
-                        <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-                    </div>
+
+                    <button class="timer-btn" onclick="initTimer('${ex.rest || '60'}')">
+                        <svg style="width:14px; height:14px; fill:currentColor;" viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+                        ${ex.rest || 'Timer'}
+                    </button>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat-badge"><small>SETS</small><strong>${data.sets}</strong></div>
+                    <div class="stat-badge"><small>REPS</small><strong>${data.reps}</strong></div>
                 </div>
 
-                <div class="exercise-details">
-                    <div class="stats-row">
-                        <div class="stat-badge"><small>SETS</small><strong>${data.sets}</strong></div>
-                        <div class="stat-badge"><small>REPS</small><strong>${data.reps}</strong></div>
-                    </div>
+                <div class="weight-display">
+                    ${weightInputsHtml}
+                </div>
+                
+                ${ex.notes ? `<div class="notes-display" style="margin-bottom:16px; font-size: 0.9rem; color: var(--text-sec); background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">${ex.notes}</div>` : ''}
 
-                    <div class="weight-display">
-                        ${weightInputsHtml}
-                    </div>
-                    
-                    ${ex.notes ? `<div style="margin-bottom:16px; font-size: 0.9rem; color: var(--text-sec); background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">${ex.notes}</div>` : ''}
-
-                    <div class="card-actions">
-                        <button class="btn-card" onclick="editExercise(${ex.id})">Edit</button>
-                        <button class="btn-card" onclick="viewHistory(${ex.id})">History</button>
-                        ${ex.hasAlt ? `<button class="btn-card highlight" onclick="openVersionDrawer(${ex.id})">Swap</button>` : ''}
-                    </div>
+                <div class="card-actions">
+                    <button class="btn-card" onclick="editExercise(${ex.id})">Edit</button>
+                    <button class="btn-card" onclick="viewHistory(${ex.id})">History</button>
+                    ${ex.hasAlt ? `<button class="btn-card highlight" onclick="openVersionDrawer(${ex.id})">Swap</button>` : ''}
                 </div>
             `;
-            list.appendChild(card);
-        });
-    }
-
-    // --- NEW: Toggle Logic ---
-    function toggleExpand(exId) {
-        const split = splits.find(s => s.id === currentSplitId);
-        const ex = split.exercises.find(e => e.id === exId);
-        ex.isExpanded = !ex.isExpanded; // Toggle state
-        // We don't necessarily need to save to localStorage for just UI toggles, 
-        // but re-rendering is needed to apply class.
-        renderExercises(); 
-    }
-
-    function quickUpdateWeight(exId, scope, index, value) {
-        const split = splits.find(s => s.id === currentSplitId);
-        const ex = split.exercises.find(e => e.id === exId);
-        const target = scope === 'main' ? ex : ex.alt;
-
-        if (index === null) {
-            target.weights = value;
-        } else {
-            target.weights[index] = value;
-        }
-        saveData();
-    }
-
-    function openVersionDrawer(exId) {
-        const split = splits.find(s => s.id === currentSplitId);
-        const ex = split.exercises.find(e => e.id === exId);
-        
-        if(!ex.hasAlt) return;
-
-        const drawer = document.getElementById('drawer-version');
-        const list = document.getElementById('drawer-list');
-        list.innerHTML = '';
-
-        const mainDiv = document.createElement('div');
-        mainDiv.className = `drawer-item ${!ex.showAlt ? 'active' : ''}`;
-        mainDiv.onclick = () => selectVersion(exId, false);
-        mainDiv.innerHTML = `<div><h4>${ex.name}</h4><span>Main Exercise</span></div>${!ex.showAlt ? '<span style="color:var(--primary);">✔</span>' : ''}`;
-
-        const altDiv = document.createElement('div');
-        altDiv.className = `drawer-item ${ex.showAlt ? 'active' : ''}`;
-        altDiv.onclick = () => selectVersion(exId, true);
-        altDiv.innerHTML = `<div><h4>${ex.alt.name}</h4><span>Alternative</span></div>${ex.showAlt ? '<span style="color:var(--primary);">✔</span>' : ''}`;
-
-        list.appendChild(mainDiv);
-        list.appendChild(altDiv);
-        drawer.classList.add('active');
-    }
-
-    function selectVersion(exId, showAlt) {
-        const split = splits.find(s => s.id === currentSplitId);
-        const ex = split.exercises.find(e => e.id === exId);
-        ex.showAlt = showAlt;
-        saveData();
-        closeDrawer();
-        renderExercises();
-    }
-
-    function closeDrawer() { document.getElementById('drawer-version').classList.remove('active'); }
-
-    function deleteSplit(id) {
-        showConfirm("Delete Program?", "Delete this entire program?", () => {
-            splits = splits.filter(s => s.id !== id);
-            saveData();
-            renderSplits();
-            showToast("Program Deleted");
-        });
-    }
-
-    function viewHistory(exId) {
-        const split = splits.find(s => s.id === currentSplitId);
-        const ex = split.exercises.find(e => e.id === exId);
-        const data = (ex.showAlt && ex.hasAlt) ? ex.alt : ex;
-        const history = data.history || [];
-
-        const container = document.getElementById('history-container');
-        container.innerHTML = '';
-
-        if(history.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:var(--text-sec); padding:20px;">No history recorded yet.</div>';
-        } else {
-            const ul = document.createElement('ul');
-            ul.className = 'log-list';
-            history.forEach(h => {
-                const li = document.createElement('li');
-                li.className = 'log-item';
-                li.innerHTML = `<span>${h.date}</span><span class="log-time">${h.weight}</span>`;
-                ul.appendChild(li);
+                list.appendChild(card);
             });
-            container.appendChild(ul);
         }
-        document.getElementById('modal-history').classList.add('active');
-    }
 
-    // --- TIMER LOGIC ---
-    function parseDuration(input) {
-        if(!input) return 60;
-        input = input.toString().toLowerCase();
-        let minutes = 0, seconds = 0;
-        const mMatch = input.match(/(\d+)\s*m/);
-        const sMatch = input.match(/(\d+)\s*s/);
-        
-        if (mMatch) minutes = parseInt(mMatch[1]);
-        if (sMatch) seconds = parseInt(sMatch[1]);
-        if (!mMatch && !sMatch) return parseInt(input) || 60;
-        return (minutes * 60) + seconds;
-    }
+        function quickUpdateWeight(exId, scope, index, value) {
+            const split = splits.find(s => s.id === currentSplitId);
+            const ex = split.exercises.find(e => e.id === exId);
+            const target = scope === 'main' ? ex : ex.alt;
 
-    function initTimer(restStr) {
-        const duration = parseDuration(restStr);
-        startTimer(duration);
-    }
-
-    // --- REST TIMER (Universal) ---
-    function startTimer(seconds, resuming = false) {
-        clearInterval(restTimerInterval);
-        
-        // Calculate Target Time (Universal)
-        const targetTime = resuming 
-            ? parseInt(localStorage.getItem('restTargetTime')) 
-            : Date.now() + (seconds * 1000);
-
-        if(!resuming) localStorage.setItem('restTargetTime', targetTime);
-
-        document.getElementById('timer-overlay').classList.add('visible');
-        document.body.classList.add('timer-active');
-
-        const tick = () => {
-            const now = Date.now();
-            const remaining = Math.ceil((targetTime - now) / 1000);
-            
-            if (remaining <= 0) {
-                stopTimer();
-                if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
-                showToast("⏰ REST FINISHED!");
+            if (index === null) {
+                target.weights = value;
             } else {
-                // Display Logic
-                const m = Math.floor(remaining / 60);
-                const s = remaining % 60;
-                document.getElementById('timer-count').innerText = 
-                    `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                target.weights[index] = value;
             }
-        };
+            saveData();
+        }
 
-        tick(); // Run immediately
-        restTimerInterval = setInterval(tick, 1000);
-    }
+        function openVersionDrawer(exId) {
+            const split = splits.find(s => s.id === currentSplitId);
+            const ex = split.exercises.find(e => e.id === exId);
 
-    function adjustTimer(amt) {
-        timerSeconds += amt;
-        if(timerSeconds < 0) timerSeconds = 0;
-        updateTimerDisplay();
-    }
+            if (!ex.hasAlt) return;
 
-    function stopTimer() {
-        clearInterval(restTimerInterval);
-        localStorage.removeItem('restTargetTime');
-        document.getElementById('timer-overlay').classList.remove('visible');
-        document.body.classList.remove('timer-active');
-    }
+            const drawer = document.getElementById('drawer-version');
+            const list = document.getElementById('drawer-list');
+            list.innerHTML = '';
 
-    function updateTimerDisplay() {
-        const m = Math.floor(timerSeconds / 60);
-        const s = timerSeconds % 60;
-        document.getElementById('timer-count').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
+            const mainDiv = document.createElement('div');
+            mainDiv.className = `drawer-item ${!ex.showAlt ? 'active' : ''}`;
+            mainDiv.onclick = () => selectVersion(exId, false);
+            mainDiv.innerHTML = `<div><h4>${ex.name}</h4><span>Main Exercise</span></div>${!ex.showAlt ? '<span style="color:var(--primary);">✔</span>' : ''}`;
 
-    // --- FORM LOGIC ---
-    document.getElementById('split-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('split-name').value;
-        splits.push({ id: Date.now(), name: name, exercises: [] });
-        saveData();
-        closeModal('modal-split');
-        renderSplits();
-    });
+            const altDiv = document.createElement('div');
+            altDiv.className = `drawer-item ${ex.showAlt ? 'active' : ''}`;
+            altDiv.onclick = () => selectVersion(exId, true);
+            altDiv.innerHTML = `<div><h4>${ex.alt.name}</h4><span>Alternative</span></div>${ex.showAlt ? '<span style="color:var(--primary);">✔</span>' : ''}`;
 
-    document.getElementById('exercise-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        if(currentSplitId === null) return;
+            list.appendChild(mainDiv);
+            list.appendChild(altDiv);
+            drawer.classList.add('active');
+        }
 
-        const getWeights = (cId, mode) => {
-            const inputs = document.querySelectorAll(`#${cId} input`);
-            return mode === 'single' ? inputs[0].value : Array.from(inputs).map(i => i.value);
-        };
+        function selectVersion(exId, showAlt) {
+            const split = splits.find(s => s.id === currentSplitId);
+            const ex = split.exercises.find(e => e.id === exId);
+            ex.showAlt = showAlt;
+            saveData();
+            closeDrawer();
+            renderExercises();
+        }
 
-        const id = document.getElementById('ex-id').value;
-        const wMode = document.querySelector('input[name="weightMode"]:checked').value;
-        const hasAlt = document.getElementById('has-alt').checked;
-        const today = new Date().toLocaleDateString();
+        function closeDrawer() { document.getElementById('drawer-version').classList.remove('active'); }
 
-        const newMainWeights = getWeights('weight-container-main', wMode);
-        
-        let oldEx = null;
-        const splitIndex = splits.findIndex(s => s.id === currentSplitId);
-        if(id) oldEx = splits[splitIndex].exercises.find(e => e.id == id);
-
-        // --- FIXED HISTORY LOGIC ---
-        let mainHistory = (oldEx && oldEx.history) ? oldEx.history : [];
-        
-        // Convert to strings for accurate comparison
-        const newStr = JSON.stringify(newMainWeights);
-        const oldStr = oldEx ? JSON.stringify(oldEx.weights) : "";
-
-        // Only log if weights exist AND they are different from before
-        if(newMainWeights && newStr !== oldStr && newStr !== '""' && newStr !== '[]') {
-            // Unshift adds to the TOP of the list
-            mainHistory.unshift({ 
-                date: today, 
-                weight: Array.isArray(newMainWeights) ? newMainWeights.join(' / ') : newMainWeights 
+        function deleteSplit(id) {
+            showConfirm("Delete Program?", "Delete this entire program?", () => {
+                splits = splits.filter(s => s.id !== id);
+                saveData();
+                renderSplits();
+                showToast("Program Deleted");
             });
         }
 
-        // ... (Same logic for Alt Exercise History) ...
-        let altData = null;
-        if(hasAlt) {
-            const aMode = document.querySelector('input[name="altWeightMode"]:checked').value;
-            const newAltWeights = getWeights('weight-container-alt', aMode);
-            
-            let altHistory = (oldEx && oldEx.alt && oldEx.alt.history) ? oldEx.alt.history : [];
-            const newAltStr = JSON.stringify(newAltWeights);
-            const oldAltStr = (oldEx && oldEx.alt) ? JSON.stringify(oldEx.alt.weights) : "";
+        function viewHistory(exId) {
+            const split = splits.find(s => s.id === currentSplitId);
+            const ex = split.exercises.find(e => e.id === exId);
+            const data = (ex.showAlt && ex.hasAlt) ? ex.alt : ex;
+            const history = data.history || [];
 
-            if(newAltWeights && newAltStr !== oldAltStr && newAltStr !== '""') {
-                altHistory.unshift({ 
-                    date: today, 
-                    weight: Array.isArray(newAltWeights) ? newAltWeights.join(' / ') : newAltWeights 
+            const container = document.getElementById('history-container');
+            container.innerHTML = '';
+
+            if (history.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--text-sec); padding:20px;">No history recorded yet.</div>';
+            } else {
+                const ul = document.createElement('ul');
+                ul.className = 'log-list';
+                history.forEach(h => {
+                    const li = document.createElement('li');
+                    li.className = 'log-item';
+                    li.innerHTML = `<span>${h.date}</span><span class="log-time">${h.weight}</span>`;
+                    ul.appendChild(li);
                 });
+                container.appendChild(ul);
             }
+            document.getElementById('modal-history').classList.add('active');
+        }
 
-            altData = {
-                name: document.getElementById('alt-name').value,
-                sets: document.getElementById('alt-sets').value,
-                reps: document.getElementById('alt-reps').value,
-                weightMode: aMode,
-                weights: newAltWeights,
-                history: altHistory 
+        // --- TIMER LOGIC ---
+        function parseDuration(input) {
+            if (!input) return 60;
+            input = input.toString().toLowerCase();
+            let minutes = 0, seconds = 0;
+            const mMatch = input.match(/(\d+)\s*m/);
+            const sMatch = input.match(/(\d+)\s*s/);
+
+            if (mMatch) minutes = parseInt(mMatch[1]);
+            if (sMatch) seconds = parseInt(sMatch[1]);
+            if (!mMatch && !sMatch) return parseInt(input) || 60;
+            return (minutes * 60) + seconds;
+        }
+
+        function initTimer(restStr) {
+            const duration = parseDuration(restStr);
+            startTimer(duration);
+        }
+
+        function startTimer(seconds) {
+            clearInterval(timerInterval);
+            timerSeconds = seconds;
+            updateTimerDisplay();
+            document.getElementById('timer-overlay').classList.add('visible');
+            document.body.classList.add('timer-active');
+
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                if (timerSeconds <= 0) {
+                    stopTimer();
+                    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                    showToast("⏰ REST FINISHED!");
+                } else {
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
+        function adjustTimer(amt) {
+            timerSeconds += amt;
+            if (timerSeconds < 0) timerSeconds = 0;
+            updateTimerDisplay();
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-overlay').classList.remove('visible');
+            document.body.classList.remove('timer-active');
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSeconds / 60);
+            const s = timerSeconds % 60;
+            document.getElementById('timer-count').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        // --- FORM LOGIC ---
+        document.getElementById('split-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('split-name').value;
+            splits.push({ id: Date.now(), name: name, exercises: [] });
+            saveData();
+            closeModal('modal-split');
+            renderSplits();
+        });
+
+        document.getElementById('exercise-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (currentSplitId === null) return;
+
+            const getWeights = (cId, mode) => {
+                const inputs = document.querySelectorAll(`#${cId} input`);
+                return mode === 'single' ? inputs[0].value : Array.from(inputs).map(i => i.value);
             };
-        }
 
-        const newEx = {
-            id: id ? parseInt(id) : Date.now(),
-            name: document.getElementById('ex-name').value,
-            sets: document.getElementById('ex-sets').value,
-            reps: document.getElementById('ex-reps').value,
-            rest: document.getElementById('ex-rest').value,
-            notes: document.getElementById('ex-notes').value,
-            weightMode: wMode,
-            weights: newMainWeights,
-            history: mainHistory,
-            hasAlt: hasAlt,
-            alt: altData,
-            showAlt: (oldEx ? oldEx.showAlt : false),
-            completed: (oldEx ? oldEx.completed : false), // Preserve checked state
-            isExpanded: (oldEx ? oldEx.isExpanded : false) // Preserve expansion state
-        };
+            const id = document.getElementById('ex-id').value;
+            const wMode = document.querySelector('input[name="weightMode"]:checked').value;
+            const hasAlt = document.getElementById('has-alt').checked;
+            const today = new Date().toLocaleDateString();
 
-        if (id) {
-            const exIndex = splits[splitIndex].exercises.findIndex(e => e.id == id);
-            splits[splitIndex].exercises[exIndex] = newEx;
-        } else {
-            splits[splitIndex].exercises.push(newEx);
-        }
+            const newMainWeights = getWeights('weight-container-main', wMode);
 
-        saveData();
-        closeModal('modal-ex');
-        renderExercises();
-        showToast("Saved!");
-    });
-
-    function editExercise(exId) {
-        const split = splits.find(s => s.id === currentSplitId);
-        const ex = split.exercises.find(e => e.id === exId);
-        
-        document.getElementById('modal-title').innerText = "Edit Exercise";
-        document.getElementById('ex-id').value = ex.id;
-        document.getElementById('delete-btn').style.display = 'block';
-
-        document.getElementById('ex-name').value = ex.name;
-        document.getElementById('ex-sets').value = ex.sets;
-        document.getElementById('ex-reps').value = ex.reps;
-        document.getElementById('ex-rest').value = ex.rest;
-        document.getElementById('ex-notes').value = ex.notes;
-        
-        const radios = document.getElementsByName('weightMode');
-        for(let r of radios) r.checked = (r.value === ex.weightMode);
-        updateWeightInputs('main');
-        
-        const inputs = document.querySelectorAll('#weight-container-main input');
-        if(ex.weightMode === 'single') inputs[0].value = ex.weights;
-        else inputs.forEach((inp, i) => inp.value = ex.weights[i] || '');
-
-        const altCheck = document.getElementById('has-alt');
-        altCheck.checked = ex.hasAlt;
-        toggleAltForm();
-        if(ex.hasAlt) {
-            document.getElementById('alt-name').value = ex.alt.name;
-            document.getElementById('alt-sets').value = ex.alt.sets;
-            document.getElementById('alt-reps').value = ex.alt.reps;
-            const aRadios = document.getElementsByName('altWeightMode');
-            for(let r of aRadios) r.checked = (r.value === ex.alt.weightMode);
-            updateWeightInputs('alt');
-            const aInputs = document.querySelectorAll('#weight-container-alt input');
-            if(ex.alt.weightMode === 'single') aInputs[0].value = ex.alt.weights;
-            else aInputs.forEach((inp, i) => inp.value = ex.alt.weights[i] || '');
-        }
-
-        document.getElementById('modal-ex').classList.add('active');
-    }
-
-    function updateWeightInputs(scope) {
-        const setsInput = document.getElementById(scope === 'main' ? 'ex-sets' : 'alt-sets');
-        const modeRadios = document.getElementsByName(scope === 'main' ? 'weightMode' : 'altWeightMode');
-        const container = document.getElementById(scope === 'main' ? 'weight-container-main' : 'weight-container-alt');
-        
-        let mode = 'single';
-        for(let r of modeRadios) if(r.checked) mode = r.value;
-        const sets = parseInt(setsInput.value) || 1;
-        const currentInputs = container.querySelectorAll('input');
-        const oldValues = Array.from(currentInputs).map(i => i.value);
-        
-        container.innerHTML = '';
-        if (mode === 'single') {
-            container.innerHTML = `<input type="number" placeholder="Weight" class="direct-input" style="width:100%; text-align:left;" value="${oldValues[0]||''}">`;
-        } else {
-            for (let i = 0; i < sets; i++) {
-                const inp = document.createElement('input');
-                inp.type='number'; inp.placeholder=`Set ${i+1}`;
-                inp.style.marginBottom = '10px';
-                if(oldValues[i]) inp.value=oldValues[i];
-                container.appendChild(inp);
-            }
-        }
-    }
-
-    function toggleAltForm() {
-        const c = document.getElementById('has-alt').checked;
-        document.getElementById('alt-form-container').classList.toggle('hidden', !c);
-    }
-
-    function deleteExercise() {
-        showConfirm("Delete Exercise?", "Remove this exercise permanently?", () => {
+            let oldEx = null;
             const splitIndex = splits.findIndex(s => s.id === currentSplitId);
-            const exId = parseInt(document.getElementById('ex-id').value);
-            splits[splitIndex].exercises = splits[splitIndex].exercises.filter(e => e.id !== exId);
+            if (id) oldEx = splits[splitIndex].exercises.find(e => e.id == id);
+
+            let mainHistory = (oldEx && oldEx.history) ? oldEx.history : [];
+            const mainWeightStr = Array.isArray(newMainWeights) ? newMainWeights.join(', ') : newMainWeights;
+            const oldMainWeightStr = oldEx ? (Array.isArray(oldEx.weights) ? oldEx.weights.join(', ') : oldEx.weights) : '';
+
+            if (mainWeightStr && mainWeightStr !== oldMainWeightStr) {
+                mainHistory.unshift({ date: today, weight: mainWeightStr });
+                if (mainHistory.length > 30) mainHistory.pop(); // Keep only the last 30 changes
+            }
+
+            let altData = null;
+            if (hasAlt) {
+                const aMode = document.querySelector('input[name="altWeightMode"]:checked').value;
+                const newAltWeights = getWeights('weight-container-alt', aMode);
+                const altWeightStr = Array.isArray(newAltWeights) ? newAltWeights.join(', ') : newAltWeights;
+
+                let altHistory = (oldEx && oldEx.alt && oldEx.alt.history) ? oldEx.alt.history : [];
+                const oldAltWeightStr = (oldEx && oldEx.alt) ? (Array.isArray(oldEx.alt.weights) ? oldEx.alt.weights.join(', ') : oldEx.alt.weights) : '';
+
+                if (altWeightStr && altWeightStr !== oldAltWeightStr) {
+                    altHistory.unshift({ date: today, weight: altWeightStr });
+                    if (altHistory.length > 30) altHistory.pop(); // Keep only the last 30 changes
+                }
+
+                altData = {
+                    name: document.getElementById('alt-name').value,
+                    sets: document.getElementById('alt-sets').value,
+                    reps: document.getElementById('alt-reps').value,
+                    weightMode: aMode,
+                    weights: newAltWeights,
+                    history: altHistory
+                };
+            }
+
+            const newEx = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('ex-name').value,
+                sets: document.getElementById('ex-sets').value,
+                reps: document.getElementById('ex-reps').value,
+                rest: document.getElementById('ex-rest').value,
+                notes: document.getElementById('ex-notes').value,
+                weightMode: wMode,
+                weights: newMainWeights,
+                history: mainHistory,
+                hasAlt: hasAlt,
+                alt: altData,
+                showAlt: (oldEx ? oldEx.showAlt : false)
+            };
+
+            if (id) {
+                const exIndex = splits[splitIndex].exercises.findIndex(e => e.id == id);
+                splits[splitIndex].exercises[exIndex] = newEx;
+            } else {
+                splits[splitIndex].exercises.push(newEx);
+            }
+
             saveData();
             closeModal('modal-ex');
             renderExercises();
-            showToast("Exercise Deleted");
+            showToast("Saved!");
         });
-    }
 
-    function toggleView(exId) {
-        const split = splits.find(s => s.id === currentSplitId);
-        const ex = split.exercises.find(e => e.id === exId);
-        ex.showAlt = !ex.showAlt;
-        saveData();
-        renderExercises();
-    }
+        function editExercise(exId) {
+            const split = splits.find(s => s.id === currentSplitId);
+            const ex = split.exercises.find(e => e.id === exId);
 
-    // --- IMPORT/EXPORT/DELETE ---
-    function openDataModal() {
-        const container = document.getElementById('logs-container');
-        container.innerHTML = '';
-        if (workoutLogs.length === 0) {
-            container.innerHTML = '<div style="color:var(--text-sec); text-align:center;">No completed workouts yet.</div>';
-        } else {
-            const ul = document.createElement('ul');
-            ul.className = 'log-list';
-            [...workoutLogs].reverse().forEach(log => {
-                const li = document.createElement('li');
-                li.className = 'log-item';
-                li.innerHTML = `<span>${log.date} - ${log.splitName}</span><span class="log-time">${log.duration}</span>`;
-                ul.appendChild(li);
-            });
-            container.appendChild(ul);
-        }
-        document.getElementById('modal-data').classList.add('active');
-    }
+            document.getElementById('modal-title').innerText = "Edit Exercise";
+            document.getElementById('ex-id').value = ex.id;
+            document.getElementById('delete-btn').style.display = 'block';
 
-    function exportData() {
-        const data = { splits: splits, logs: workoutLogs, version: "1.0", exportDate: new Date().toISOString() };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `training_backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-    }
+            document.getElementById('ex-name').value = ex.name;
+            document.getElementById('ex-sets').value = ex.sets;
+            document.getElementById('ex-reps').value = ex.reps;
+            document.getElementById('ex-rest').value = ex.rest;
+            document.getElementById('ex-notes').value = ex.notes;
 
-    function importData(inputElement) {
-        const file = inputElement.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = JSON.parse(e.target.result);
-                if (!data.splits && !data.logs) { showToast("Error: Invalid Backup File"); return; }
-                showConfirm("Load Backup?", "Overwrite current data?", () => {
-                    localStorage.setItem('trainingSplits', JSON.stringify(data.splits || []));
-                    localStorage.setItem('workoutLogs', JSON.stringify(data.logs || []));
-                    showToast("Data Loaded!");
-                    setTimeout(() => location.reload(), 1000); 
-                });
-            } catch (err) { console.error(err); showToast("Failed to read file."); }
-        };
-        reader.readAsText(file);
-        inputElement.value = '';
-    }
+            const radios = document.getElementsByName('weightMode');
+            for (let r of radios) r.checked = (r.value === ex.weightMode);
+            updateWeightInputs('main');
 
-    function nukeData() {
-        showConfirm("Delete Everything?", "WARNING: Deletes ALL data!", () => {
-            localStorage.clear();
-            location.reload();
-        });
-    }
+            const inputs = document.querySelectorAll('#weight-container-main input');
+            if (ex.weightMode === 'single') inputs[0].value = ex.weights;
+            else inputs.forEach((inp, i) => inp.value = ex.weights[i] || '');
 
-    // --- NEW: TOGGLE CHECKBOX ---
-    function toggleComplete(exId) {
-        const split = splits.find(s => s.id === currentSplitId);
-        const ex = split.exercises.find(e => e.id === exId);
-        
-        ex.completed = !ex.completed; // Toggle State
-        saveData();
-        renderExercises(); // Re-render to show animation
-        
-        // Simple haptic feedback
-        if(ex.completed && navigator.vibrate) navigator.vibrate(20);
-    }
-
-    // --- SESSION TIMER (Universal) ---
-    function toggleSession() {
-        const btn = document.getElementById('btn-session');
-        
-        if (!isTraining) {
-            // START
-            isTraining = true;
-            const startTime = Date.now();
-            localStorage.setItem('sessionStartTime', startTime);
-            resumeSessionUI(startTime);
-        } else {
-            // STOP
-            finishSession();
-        }
-    }
-
-    function resumeSessionUI(startTime) {
-        const btn = document.getElementById('btn-session');
-        btn.className = 'btn-finish';
-        
-        const tick = () => {
-            const diff = Math.floor((Date.now() - startTime) / 1000);
-            const m = Math.floor(diff / 60).toString().padStart(2, '0');
-            const s = (diff % 60).toString().padStart(2, '0');
-            btn.innerHTML = `FINISH (${m}:${s})`;
-        };
-
-        tick();
-        sessionInterval = setInterval(tick, 1000);
-    }
-
-    function finishSession() {
-        const startTime = parseInt(localStorage.getItem('sessionStartTime'));
-        const durationSec = Math.floor((Date.now() - startTime) / 1000);
-        const m = Math.floor(durationSec / 60);
-        const s = durationSec % 60;
-        const timeStr = `${m}m ${s}s`;
-
-        showConfirm("Finish Workout?", `Duration: ${timeStr}. Save & Rotate?`, () => {
-            clearInterval(sessionInterval);
-            localStorage.removeItem('sessionStartTime'); // Clear Saved Time
-            
-            const splitIndex = splits.findIndex(s => s.id === currentSplitId);
-            const split = splits[splitIndex];
-
-            // Save Log
-            workoutLogs.push({ date: new Date().toLocaleDateString(), splitName: split.name, duration: timeStr });
-            localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
-
-            // Reset & Rotate
-            split.exercises.forEach(ex => { ex.completed = false; ex.isExpanded = false; });
-            if (splitIndex > -1) {
-                splits.splice(splitIndex, 1);
-                splits.push(split);
-                saveData();
-                renderSplits();
+            const altCheck = document.getElementById('has-alt');
+            altCheck.checked = ex.hasAlt;
+            toggleAltForm();
+            if (ex.hasAlt) {
+                document.getElementById('alt-name').value = ex.alt.name;
+                document.getElementById('alt-sets').value = ex.alt.sets;
+                document.getElementById('alt-reps').value = ex.alt.reps;
+                const aRadios = document.getElementsByName('altWeightMode');
+                for (let r of aRadios) r.checked = (r.value === ex.alt.weightMode);
+                updateWeightInputs('alt');
+                const aInputs = document.querySelectorAll('#weight-container-alt input');
+                if (ex.alt.weightMode === 'single') aInputs[0].value = ex.alt.weights;
+                else aInputs.forEach((inp, i) => inp.value = ex.alt.weights[i] || '');
             }
 
-            showToast("Workout Saved!");
-            isTraining = false;
-            document.getElementById('btn-session').className = 'btn-start';
-            document.getElementById('btn-session').innerHTML = "START TRAINING";
-            openDataModal();
-        });
-    }
-
-    function resetExForm() {
-        document.getElementById('exercise-form').reset();
-        document.getElementById('ex-id').value = '';
-        document.getElementById('delete-btn').style.display = 'none';
-        document.getElementById('has-alt').checked = false;
-        toggleAltForm();
-        updateWeightInputs('main');
-        document.getElementById('modal-title').innerText = "Add Exercise";
-    }
-
-    function saveData() { localStorage.setItem('trainingSplits', JSON.stringify(splits)); }
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg; t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal-overlay') || event.target.classList.contains('drawer-overlay')) {
-            event.target.classList.remove('active');
+            document.getElementById('modal-ex').classList.add('active');
         }
-    }
-</script>
+
+        function updateWeightInputs(scope) {
+            const setsInput = document.getElementById(scope === 'main' ? 'ex-sets' : 'alt-sets');
+            const modeRadios = document.getElementsByName(scope === 'main' ? 'weightMode' : 'altWeightMode');
+            const container = document.getElementById(scope === 'main' ? 'weight-container-main' : 'weight-container-alt');
+
+            let mode = 'single';
+            for (let r of modeRadios) if (r.checked) mode = r.value;
+            const sets = parseInt(setsInput.value) || 1;
+            const currentInputs = container.querySelectorAll('input');
+            const oldValues = Array.from(currentInputs).map(i => i.value);
+
+            container.innerHTML = '';
+            if (mode === 'single') {
+                container.innerHTML = `<input type="number" placeholder="Weight" class="direct-input" style="width:100%; text-align:left;" value="${oldValues[0] || ''}">`;
+            } else {
+                for (let i = 0; i < sets; i++) {
+                    const inp = document.createElement('input');
+                    inp.type = 'number'; inp.placeholder = `Set ${i + 1}`;
+                    inp.style.marginBottom = '10px';
+                    if (oldValues[i]) inp.value = oldValues[i];
+                    container.appendChild(inp);
+                }
+            }
+        }
+
+        function toggleAltForm() {
+            const c = document.getElementById('has-alt').checked;
+            document.getElementById('alt-form-container').classList.toggle('hidden', !c);
+        }
+
+        function deleteExercise() {
+            showConfirm("Delete Exercise?", "Remove this exercise permanently?", () => {
+                const splitIndex = splits.findIndex(s => s.id === currentSplitId);
+                const exId = parseInt(document.getElementById('ex-id').value);
+                splits[splitIndex].exercises = splits[splitIndex].exercises.filter(e => e.id !== exId);
+                saveData();
+                closeModal('modal-ex');
+                renderExercises();
+                showToast("Exercise Deleted");
+            });
+        }
+
+        function toggleView(exId) {
+            const split = splits.find(s => s.id === currentSplitId);
+            const ex = split.exercises.find(e => e.id === exId);
+            ex.showAlt = !ex.showAlt;
+            saveData();
+            renderExercises();
+        }
+
+        // --- IMPORT/EXPORT/DELETE ---
+        function openDataModal() {
+            const container = document.getElementById('logs-container');
+            container.innerHTML = '';
+            if (workoutLogs.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-sec); text-align:center;">No completed workouts yet.</div>';
+            } else {
+                const ul = document.createElement('ul');
+                ul.className = 'log-list';
+                [...workoutLogs].reverse().forEach(log => {
+                    const li = document.createElement('li');
+                    li.className = 'log-item';
+                    li.innerHTML = `<span>${log.date} - ${log.splitName}</span><span class="log-time">${log.duration}</span>`;
+                    ul.appendChild(li);
+                });
+                container.appendChild(ul);
+            }
+            document.getElementById('modal-data').classList.add('active');
+        }
+
+        function exportData() {
+            const data = { splits: splits, logs: workoutLogs, version: "1.0", exportDate: new Date().toISOString() };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `training_backup_${new Date().toISOString().slice(0, 10)}.json`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importData(inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.splits && !data.logs) { showToast("Error: Invalid Backup File"); return; }
+                    showConfirm("Load Backup?", "Overwrite current data?", () => {
+                        localStorage.setItem('trainingSplits', JSON.stringify(data.splits || []));
+                        localStorage.setItem('workoutLogs', JSON.stringify(data.logs || []));
+                        showToast("Data Loaded!");
+                        setTimeout(() => location.reload(), 1000);
+                    });
+                } catch (err) { console.error(err); showToast("Failed to read file."); }
+            };
+            reader.readAsText(file);
+            inputElement.value = '';
+        }
+
+        function nukeData() {
+            showConfirm("Delete Everything?", "WARNING: Deletes ALL data!", () => {
+                localStorage.clear();
+                location.reload();
+            });
+        }
+
+        // --- NEW: TOGGLE CHECKBOX ---
+        function toggleComplete(exId) {
+            const split = splits.find(s => s.id === currentSplitId);
+            const ex = split.exercises.find(e => e.id === exId);
+
+            ex.completed = !ex.completed; // Toggle State
+            saveData(); // Save quietly in the background
+
+            // --- OPTIMIZATION: Update only the target DOM element ---
+            const cardNode = document.getElementById(`exercise-card-${exId}`);
+            if (cardNode) {
+                const checkBtn = cardNode.querySelector('.check-btn');
+
+                if (ex.completed) {
+                    cardNode.classList.add('completed');
+                    checkBtn.classList.add('checked');
+                    checkBtn.innerHTML = '&#10003;';
+                    if (navigator.vibrate) navigator.vibrate(20);
+                } else {
+                    cardNode.classList.remove('completed');
+                    checkBtn.classList.remove('checked');
+                    checkBtn.innerHTML = '';
+                }
+            }
+        }
+
+        // --- UPDATED: SESSION ROTATION (Resets checks) ---
+        function toggleSession() {
+            const btn = document.getElementById('btn-session');
+
+            if (!isTraining) {
+                // START
+                if (sessionInterval) clearInterval(sessionInterval);
+
+                isTraining = true;
+                sessionStartTime = Date.now();
+                btn.className = 'btn-finish';
+                btn.innerHTML = "FINISH (00:00)";
+
+                sessionInterval = setInterval(() => {
+                    const diff = Math.floor((Date.now() - sessionStartTime) / 1000);
+                    const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                    const s = (diff % 60).toString().padStart(2, '0');
+                    btn.innerHTML = `FINISH (${m}:${s})`;
+                }, 1000);
+
+            } else {
+                // FINISH
+                const durationSec = Math.floor((Date.now() - sessionStartTime) / 1000);
+                const m = Math.floor(durationSec / 60);
+                const s = durationSec % 60;
+                const timeStr = `${m}m ${s}s`;
+
+                showConfirm(
+                    "Finish Workout?",
+                    `Duration: ${timeStr}. Save & Rotate?`,
+                    () => {
+                        // Instantly kill the timer
+                        clearInterval(sessionInterval);
+                        sessionInterval = null;
+
+                        const splitIndex = splits.findIndex(s => s.id === currentSplitId);
+
+                        if (splitIndex > -1) {
+                            const split = splits[splitIndex];
+
+                            // 1. Save Log
+                            workoutLogs.push({
+                                date: new Date().toLocaleDateString(),
+                                splitName: split.name,
+                                duration: timeStr
+                            });
+
+                            // Cap at 100 entries to prevent LocalStorage quota crashes
+                            if (workoutLogs.length > 100) {
+                                workoutLogs = workoutLogs.slice(-100);
+                            }
+                            localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
+
+                            // 2. RESET CHECKBOXES safely
+                            if (Array.isArray(split.exercises)) {
+                                split.exercises.forEach(ex => ex.completed = false);
+                            }
+
+                            // 3. ROTATE PROGRAM
+                            splits.splice(splitIndex, 1);
+                            splits.push(split);
+                            saveData();
+                        }
+
+                        showToast("Workout Saved & Rotated!");
+
+                        isTraining = false;
+                        sessionStartTime = null;
+                        btn.className = 'btn-start';
+                        btn.innerHTML = "START TRAINING";
+
+                        internalGoHomeUI();
+                        openDataModal();
+                    }
+                );
+            }
+        }
+
+        function resetExForm() {
+            document.getElementById('exercise-form').reset();
+            document.getElementById('ex-id').value = '';
+            document.getElementById('delete-btn').style.display = 'none';
+            document.getElementById('has-alt').checked = false;
+            toggleAltForm();
+            updateWeightInputs('main');
+            document.getElementById('modal-title').innerText = "Add Exercise";
+        }
+
+        function saveData() { localStorage.setItem('trainingSplits', JSON.stringify(splits)); }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        window.onclick = function (event) {
+            if (event.target.classList.contains('modal-overlay') || event.target.classList.contains('drawer-overlay')) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
 </body>
+
 </html>
